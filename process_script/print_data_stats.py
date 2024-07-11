@@ -37,7 +37,8 @@ def print_e2e_stats(df):
 
 def print_udl1_stats(df):
      duration_df_dict = process_encode_centroids_search_udl_dataframe(df)
-
+     print("-------- UDL1: ENCODER + CENTROIDS SEARCH --------")
+     print("average latency(us), ")
 
 def print_udl2_stats(df):
      duration_df_dict = process_cluster_search_udl_dataframe(df)
@@ -45,6 +46,8 @@ def print_udl2_stats(df):
 
 def print_udl3_stats(df):
      duration_df_dict = process_agg_generate_udl_dataframe(df)
+
+
 
 log_files = get_log_files(local_dir, suffix)
 log_data = get_log_files_dataframe(log_files)
