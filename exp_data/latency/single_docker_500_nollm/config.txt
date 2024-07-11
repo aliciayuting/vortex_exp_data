@@ -1,0 +1,4 @@
+compute28
+node0 and node1 both could process 
+total query_batch 500
+running in a single docker
