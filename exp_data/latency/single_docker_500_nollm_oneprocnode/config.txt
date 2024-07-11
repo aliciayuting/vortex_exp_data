@@ -1,4 +1,0 @@
-compute28
-Only node1 could process UDLs
-total query_batch 500
-running in a single docker
