@@ -48,7 +48,7 @@ mv "${perf_config_file_path}.tmp" "${perf_config_file_path}"
 
 dfgs_file="dfgs.json.tmp"
 dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
-line_numbers=(15 27)
+line_numbers=(16 29)
 centroid_search_type_sentence="                        \"faiss_search_type\":${search_type}"
 sed "${line_numbers[0]}s/.*/${centroid_search_type_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
 mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
