@@ -8,6 +8,8 @@ warnings.filterwarnings("ignore")
 def write_statistics_to_csv(sub_component_latencies, csv_filename):
      results = []
      for component, df in sub_component_latencies.items():
+          if df.empty:
+               continue
           avg_duration = int(round(df[component].mean()))
           mean_duration = int(round(df[component].mean()))
           std_duration = df[component].std() # for some timestamp, like emb_load time, there is only 1 entry, so std is NaN in such case

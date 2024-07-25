@@ -56,7 +56,7 @@ def clean_log_dataframe(log_data, drop_warmup=False):
      df['querybatch_id'] = df['querybatch_id'].astype(int)
      df['cluster_id'] = df['cluster_id'].astype(int)
      if drop_warmup:
-          df = df[df['message_id'] > 30]
+          df = df[df['querybatch_id'] > 30]
      return df
 
 
@@ -84,7 +84,7 @@ def get_durations_groupby_columns(df, start_tag, end_tag, group_by_columns=['nod
 
 def process_encode_centroids_search_udl_dataframe(df):
      sub_component_latencies = {}
-     sub_component_latencies['udl1_time'] = get_durations(df, 20010, 20100, group_by_column='querybatch_id', duration_name='udl1_time')
+     sub_component_latencies['udl1_time'] = get_durations(df, 20000, 20100, group_by_column='querybatch_id', duration_name='udl1_time')
      sub_component_latencies['centroids_load_time'] = get_durations(df, 20010, 20011, group_by_column='node_id', duration_name='centroids_load_time')
      sub_component_latencies['encode_time'] = get_durations(df, 20020, 20021, group_by_column='querybatch_id', duration_name='encode_time')
      sub_component_latencies['centroids_search_time'] = get_durations(df, 20030, 20031, group_by_column='querybatch_id', duration_name='centroids_search_time')
