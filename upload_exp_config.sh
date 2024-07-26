@@ -59,14 +59,14 @@ mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
 # 2. scp to remote directory
 
 remote_cfg_directory="~/workspace/cascade/build-Release/src/applications/rag_demo/cfg"
-remote_pythonudl_directory="~/workspace/cascade/build-Release/src/applications/rag_demo/python_udls"
+remote_perfconfig_directory="~/workspace/cascade/build-Release/src/applications/rag_demo/perf_test"
 for ((i=0; i<${#ips[@]}; i++)); do
      node_name="${node_names[i]}"
      node_id="${node_ids[i]}"
      cfg_file_path="${local_cfg_directory}/${node_id}/${derecho_cfg_file_name}"
      scp "${cfg_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/" 
      perf_config_file_path="${local_cfg_directory}/${perf_config_file}"
-     scp "${perf_config_file_path}" "${node_name}:${remote_pythonudl_directory}/"
+     scp "${perf_config_file_path}" "${node_name}:${remote_perfconfig_directory}/"
      dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
      scp "${dfgs_file_path}" "${node_name}:${remote_cfg_directory}/"
 done

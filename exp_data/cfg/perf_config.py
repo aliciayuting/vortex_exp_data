@@ -14,44 +14,19 @@ USE_WHICH_FAISE_SAERCH = 0 # 0: cpu_flat, 1: gpu_flat, 2: gpu_ivf_flat, 3: gpu_i
 '''
 Configuration for client side batch requests
 '''
-TOTAL_BATCH_COUNT = 1
-QUERY_PER_BATCH = 1
+TOTAL_BATCH_COUNT = 10
+QUERY_PER_BATCH = 6
 MAX_RESULT_WAIT_TIME = 240 # seconds
 RETRIEVE_WAIT_INTERVAL = 0.5 # seconds
 PRINT_FINISH_INTEVAL = 100 # print a checkpoint after 100 batches 
 
-'''
-Configurations for debugging
-'''
-INCLUDE_RUNNING_LLM=0
-PRINT_DEBUG_MESSAGE=1
+
 
 
 
 '''
-Tags for logging
+Parameters for generating queries in accordance with queueing theory.
 '''
-# Client log tags
-LOG_TAG_QUERIES_SENDING_START=10000
-LOG_TAG_QUERIES_SENDING_END=10001
-LOG_TAG_QUERIES_RESULT_CLIENT_RECEIVED=10100
-
-# Centroids_search UDL log tags are set in CMakelists.txt
-# Cluster_search UDL log tags are set in CMakelists.txt
-
-
-# AGG GENERATE UDL
-LOG_TAG_AGG_UDL_START=40000
-LOG_TAG_AGG_UDL_FINISHED_PARSE=40001
-LOG_TAG_AGG_UDL_END_NOT_FULLY_GATHERED=40010
-LOG_TAG_AGG_UDL_QUERY_FINISHED_GATHERED=40011
-LOG_TAG_AGG_UDL_RETRIEVE_DOC_START=40020
-LOG_TAG_AGG_UDL_LOAD_ANSWER_START=40120
-LOG_TAG_AGG_UDL_LOAD_ANSWER_END=40121
-LOG_TAG_AGG_UDL_LOAD_DOC_START=40220
-LOG_TAG_AGG_UDL_LOAD_DOC_END=40221
-LOG_TAG_AGG_UDL_RETRIEVE_DOC_END=40021
-LOG_TAG_AGG_UDL_PUT_RESULT_START=40030
-LOG_TAG_AGG_UDL_PUT_RESULT_END=40031
-
-
+# Average number of queries per second, which is also the rate parameter lambda of the
+# exponential distribution. This is the inverse of the scale parameter.
+AVG_QUERY_PER_SEC = 10
