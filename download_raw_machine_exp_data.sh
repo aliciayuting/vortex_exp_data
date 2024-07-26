@@ -34,5 +34,5 @@ done
 # Copy config to local file
 scp "${node_name}:${remote_directory}/dfgs.json.tmp" "${local_directory}/"
 # Copy client config to local file
-remote_perf_config_dir="~/workspace/cascade/build-Release/src/applications/rag_demo/python_udls/perf_config.py"
-scp "${node_names[-1]}:${remote_perf_config_dir}" "${local_directory}/"
+remote_perf_config_dir="~/workspace/cascade/build-Release/src/applications/rag_demo/cfg/${node_ids[0]}/perf_test/perf_config.py"
+scp "${node_names[0]}:${remote_perf_config_dir}" "${local_directory}/"
