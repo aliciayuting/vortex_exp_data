@@ -69,5 +69,7 @@ for ((i=0; i<${#ips[@]}; i++)); do
      scp "${perf_config_file_path}" "${node_name}:${remote_perfconfig_directory}/"
      dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
      scp "${dfgs_file_path}" "${node_name}:${remote_cfg_directory}/"
+     layot_file_path="${local_cfg_directory}/layout.json.tmp"
+     scp "${layot_file_path}" "${node_name}:${remote_cfg_directory}/"
 done
 

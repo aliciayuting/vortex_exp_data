@@ -9,52 +9,72 @@ warnings.filterwarnings("ignore")
 
 arguments = sys.argv
 if len(sys.argv) < 2:
-     print("Usage: python3 print_data_stats.py <data_dir> <print_type>(e2e_latency | udl1 | udl2 | udl3)\n\
-           udl1 is the encoder + centroids search \n\
-           udl2 is the cluster search \n\
-           udl3 is the aggregate + LLM generate \n\
-           default <print_type>: e2e_latency")
+     print("Usage: python3 print_data_stats.py <data_dir>")
      exit()
 local_dir = sys.argv[1]
-print_type = "e2e_latency"
-if len(sys.argv) > 2:
-     print_type = sys.argv[2]
+print("print_type (e2e | udl1 | udl2 | udl3):")
+print_type = input()
+if print_type not in ["e2e", "udl1", "udl2", "udl3"]:
+     print("Invalid print_type")
+     exit()
+print("drop_warmup number:")
+drop_warmup_num = int(input())
 
 pd.set_option('display.max_columns', None)
 
 
+def print_duration_df(duration_df,  column_name='e2e_latency'):
+     col_width = 25
+     print("number of rows: ".ljust(col_width), len(duration_df))
+     print(f"average (us): ".ljust(col_width), round(duration_df[column_name].mean(),2))
+     print(f"median (us): ".ljust(col_width), round(duration_df[column_name].median(),2))
+     print(f"max (us): ".ljust(col_width), round(duration_df[column_name].max(),2))
+     print(f"min (us): ".ljust(col_width), round(duration_df[column_name].min(),2))
+     print(f"standard deviation: ".ljust(col_width), round(duration_df[column_name].std(),2))
+     
+
+def print_udl_stats(duration_df_dict, type_name):
+     print("-------- ", type_name, " --------")
+     for key in duration_df_dict:
+          duration_df = duration_df_dict[key]
+          print("[", key, "]")
+          if duration_df.empty:
+               print(f"Empty dataframe for {key}, drop_warmup:{drop_warmup}")
+               continue
+          print_duration_df(duration_df,column_name=key)
+     print("------------------------------------")
+
+
 def print_e2e_stats(df):
      duration_df = process_end_to_end_latency_dataframe(df)
-     print("-------- END-TO-END LATENCY --------")
-     print("number of batch_query counts: ", duration_df['querybatch_id'].count())
-     print("average e2e latency (us): ", duration_df['e2e_latency'].mean())
-     print("median e2e latency (us): ", duration_df['e2e_latency'].median())
-     print("max e2e latency (us): ", duration_df['e2e_latency'].max())
-     print("min e2e latency (us): ", duration_df['e2e_latency'].min())
-     print("standard deviation: ", duration_df['e2e_latency'].std())
+     type_name="END-TO-END LATENCY"
+     print("-------- ", type_name, " --------")
+     print_duration_df(duration_df, column_name='e2e_latency')
      print("------------------------------------")
 
 
 def print_udl1_stats(df):
-     duration_df_dict = process_encode_centroids_search_udl_dataframe(df)
-     print("-------- UDL1: ENCODER + CENTROIDS SEARCH --------")
-     print("average latency(us), ")
+     duration_df_dict = process_udl1_dataframe(df)
+     print_udl_stats(duration_df_dict, "UDL1 CENTROIDS SEARCH")
+     
 
 def print_udl2_stats(df):
-     duration_df_dict = process_cluster_search_udl_dataframe(df)
+     duration_df_dict = process_udl2_dataframe(df)
      # Note that deserialize_blob_time different because some blob contains more query sub-batches while others contain less
+     print_udl_stats(duration_df_dict, "UDL2 CLUSTER SEARCH")
+     
 
 def print_udl3_stats(df):
-     duration_df_dict = process_agg_generate_udl_dataframe(df)
-
+     duration_df_dict = process_udl3_dataframe(df)
+     print_udl_stats(duration_df_dict, "UDL3 AGGREGATE (+ LLM GENERATE)")
 
 
 log_files = get_log_files(local_dir, suffix)
 log_data = get_log_files_dataframe(log_files)
-df = clean_log_dataframe(log_data)
+df = clean_log_dataframe(log_data,drop_warmup=drop_warmup_num)
 
 
-if print_type == "e2e_latency":
+if print_type == "e2e":
      print_e2e_stats(df)
      
 elif print_type == "udl1":
