@@ -12,9 +12,9 @@ if len(sys.argv) < 2:
      print("Usage: python3 print_data_stats.py <data_dir>")
      exit()
 local_dir = sys.argv[1]
-print("print_type (e2e | udl1 | udl2 | udl3):")
+print("print_type (e2e | udl1 | udl2 | udl3 | all):")
 print_type = input()
-if print_type not in ["e2e", "udl1", "udl2", "udl3"]:
+if print_type not in ["e2e", "udl1", "udl2", "udl3", "all"]:
      print("Invalid print_type")
      exit()
 print("drop_warmup number:")
@@ -39,10 +39,25 @@ def print_udl_stats(duration_df_dict, type_name):
           duration_df = duration_df_dict[key]
           print("[", key, "]")
           if duration_df.empty:
-               print(f"Empty dataframe for {key}, drop_warmup:{drop_warmup}")
+               print(f"Empty dataframe for {key}, drop_warmup:{drop_warmup_num}")
                continue
           print_duration_df(duration_df,column_name=key)
      print("------------------------------------")
+     
+def print_avgs(duration_df_dict, type_name):
+     print("-------- ", type_name, " --------")
+     keys = list(duration_df_dict.keys())
+     avg_durations = []
+     for key in duration_df_dict:
+          duration_df = duration_df_dict[key]
+          if duration_df.empty:
+               keys.remove(key)
+               continue
+          avg_durations.append(round(duration_df[key].mean(),2))
+     key_width = max(len(key) for key in keys) + 1  # Adding extra space for padding
+     print("items:".ljust(key_width) + "".join(f"{key}".ljust(key_width) for key in keys))
+     print("Avg(us):".ljust(key_width) + "".join(f"{duration:.2f}".ljust(key_width) for duration in avg_durations))
+     # print("-------------------------------------------")
 
 
 def print_e2e_stats(df):
@@ -69,6 +84,17 @@ def print_udl3_stats(df):
      print_udl_stats(duration_df_dict, "UDL3 AGGREGATE (+ LLM GENERATE)")
 
 
+def print_udls(df):
+     duration_df_dict = {}
+     duration_df_dict["e2e_latency"] = process_end_to_end_latency_dataframe(df)
+     print_avgs(duration_df_dict, "END-TO-END LATENCY")
+     duration_df_dict = process_udl1_dataframe(df)
+     print_avgs(duration_df_dict, "UDL1 CENTROIDS SEARCH")
+     duration_df_dict = process_udl2_dataframe(df)
+     print_avgs(duration_df_dict, "UDL2 CLUSTER SEARCH")
+     duration_df_dict = process_udl3_dataframe(df)
+     print_avgs(duration_df_dict, "UDL3 AGGREGATE (+ LLM GENERATE)")
+
 log_files = get_log_files(local_dir, suffix)
 log_data = get_log_files_dataframe(log_files)
 df = clean_log_dataframe(log_data,drop_warmup=drop_warmup_num)
@@ -85,3 +111,6 @@ elif print_type == "udl2":
      
 elif print_type == "udl3":
      print_udl3_stats(df)
+     
+elif print_type == "all":
+     print_udls(df)

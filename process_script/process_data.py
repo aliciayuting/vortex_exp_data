@@ -144,7 +144,7 @@ def process_end_to_end_latency_dataframe(original_df, end_at_client=False):
      result_count = len(result_df)
      unique_combinations = result_df[['client_id', 'batch_id', 'qid']].drop_duplicates()
      unique_count = len(unique_combinations)
-     print(f"Number of rows:{result_count} \nNumber of unique (client_id, batch_id, qid) combinations: {unique_count}")
+     # print(f"Number of rows:{result_count} \nNumber of unique (client_id, batch_id, qid) combinations: {unique_count}")
      return result_df
 
 
