@@ -1,5 +1,7 @@
 # Ignore all .dat files
 *.dat
+*.pkl
+*hotpot_train_v1.1.json*
 # exp_data/*
 */__pycache__/*
 *__pycache__*
