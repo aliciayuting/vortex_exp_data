@@ -75,6 +75,31 @@ def get_durations(df, start_tag, end_tag, group_by_columns=['node_id'], duration
      duration_df = pd.DataFrame(duration_results)
      return duration_df
 
+
+def get_durations_based_on_nodes(df, start_tag, end_tag, group_by_columns=['node_id'], duration_name='latency'):
+    filtered_df = df[(df['tag'] == start_tag) | (df['tag'] == end_tag)]
+    grouped = filtered_df.groupby(group_by_columns)[['timestamp', 'node_id']]
+    same_node_durations = []
+    different_node_durations = []
+    
+    for group_values, data in grouped:
+        if data['node_id'].nunique() == 1:
+            latency = data['timestamp'].max() - data['timestamp'].min()
+            result = {group_by_column: value for group_by_column, value in zip(group_by_columns, group_values)}
+            result[duration_name+"_same_node_time"] = latency
+            same_node_durations.append(result)
+        else:
+            latency = data['timestamp'].max() - data['timestamp'].min()
+          #   latency = end_time - start_time
+            result = {group_by_column: value for group_by_column, value in zip(group_by_columns, group_values)}
+            result[duration_name+"_diff_nodes_time"] = latency
+            different_node_durations.append(result)
+    
+    same_node_df = pd.DataFrame(same_node_durations)
+    different_node_df = pd.DataFrame(different_node_durations)
+    print(different_node_df)
+    return same_node_df, different_node_df
+
 def process_udl1_dataframe(df):
      sub_component_latencies = {}
      sub_component_latencies['udl1_time'] = get_durations(df, 20000, 20100, group_by_columns=['node_id','querybatch_id'], duration_name='udl1_time')
@@ -118,6 +143,28 @@ def process_udl3_dataframe(df):
      sub_component_latencies['result_put_time'] = get_durations(udl3_df, 40030, 40031, group_by_columns=['node_id','batch_id','qid'], duration_name='result_put_time')
      return sub_component_latencies
 
+def process_btw_udls(df):
+     sub_component_latencies = {}
+     # NOTE: qb_qid = query_batch_id * 100000 * QUERY_PER_BATCH + qid 
+     multiplier = 100000
+     df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // multiplier).astype(int)
+
+     sub_component_latencies['udl1_udl2_time'] = get_durations(df, 20050, 30000, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='udl1_udl2_time')
+     sub_component_latencies['udl2_udl3_time'] = get_durations(df, 30050, 40000, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='udl2_udl3_time')
+     return sub_component_latencies
+
+def process_btw_udls_nodes(df):
+     sub_component_latencies = {}
+     multiplier = 100000
+     df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // multiplier).astype(int)
+
+     same_node_df, diff_nodes_df = get_durations_based_on_nodes(df, 20050, 30000, group_by_columns=['querybatch_id','cluster_id'], duration_name='udl1_udl2')
+     sub_component_latencies['udl1_udl2_same_node_time'] = same_node_df
+     sub_component_latencies['udl1_udl2_diff_nodes_time'] = diff_nodes_df
+     # same_node_df2, diff_nodes_df2 = get_durations_based_on_nodes(df, 30050, 40000, group_by_columns=['querybatch_id','cluster_id'], duration_name='udl2_udl3')
+     # sub_component_latencies['udl2_udl3_same_node_time'] = same_node_df2
+     # sub_component_latencies['udl2_udl3_diff_nodes_time'] = diff_nodes_df2
+     return sub_component_latencies
 
 def process_end_to_end_latency_dataframe(original_df, end_at_client=False):
      # # tag 10000 is the input send time, 40031 is the time when agg_udl finished put the result to cascade
@@ -141,9 +188,6 @@ def process_end_to_end_latency_dataframe(original_df, end_at_client=False):
      df['e2e_latency'] = df['timestamp'] - df['timestamp_start']
      df_queries = df[df['tag'] == end_tag]
      result_df = df_queries[['client_id', 'batch_id', 'qid', 'e2e_latency']]
-     result_count = len(result_df)
-     unique_combinations = result_df[['client_id', 'batch_id', 'qid']].drop_duplicates()
-     unique_count = len(unique_combinations)
      # print(f"Number of rows:{result_count} \nNumber of unique (client_id, batch_id, qid) combinations: {unique_count}")
      return result_df
 

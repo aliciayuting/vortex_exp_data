@@ -13,7 +13,8 @@ if len(sys.argv) < 2:
      exit()
 local_dir = sys.argv[1]
 print("print_type (e2e | udl1 | udl2 | udl3 | all):")
-print_type = input()
+print_type = input().strip()
+
 if print_type not in ["e2e", "udl1", "udl2", "udl3", "all"]:
      print("Invalid print_type")
      exit()
@@ -66,6 +67,7 @@ def print_e2e_stats(df):
      print("-------- ", type_name, " --------")
      print_duration_df(duration_df, column_name='e2e_latency')
      print("------------------------------------")
+     duration_df.to_csv('debug.csv', index=False)
 
 
 def print_udl1_stats(df):
@@ -94,6 +96,8 @@ def print_udls(df):
      print_avgs(duration_df_dict, "UDL2 CLUSTER SEARCH")
      duration_df_dict = process_udl3_dataframe(df)
      print_avgs(duration_df_dict, "UDL3 AGGREGATE (+ LLM GENERATE)")
+     duration_df_dict = process_btw_udls(df)
+     print_avgs(duration_df_dict, "BETWEEN UDLs")
 
 log_files = get_log_files(local_dir, suffix)
 log_data = get_log_files_dataframe(log_files)
