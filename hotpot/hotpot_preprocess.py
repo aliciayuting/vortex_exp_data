@@ -18,6 +18,8 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
 
 def get_docs(data_path):
      docs = []
+     doc_id = 0
+     total_tokens = 0
      with open(data_path, 'r') as f:
           data = json.load(f)
           for d in data:
@@ -25,11 +27,13 @@ def get_docs(data_path):
                     title = context[0]
                     sentences = context[1]
                     paragraphs = " ".join(sentences)
-                    print(num_tokens_from_string(paragraphs, "cl100k_base"))
-                    docs.append(paragraphs)
-                    break
-               if len(docs) == 10:
-                    break
+                    num_tokens = num_tokens_from_string(paragraphs, "cl100k_base")
+                    if (num_tokens > 8191):
+                         print(f"Doc {doc_id} has more than 8191 tokens")
+                    else:
+                         docs.append(paragraphs)
+                         total_tokens += num_tokens
+     print(f"Total number of documents: {len(docs)}, total tokens: {total_tokens}")
      np_docs = np.array(docs)
      return np_docs
 
@@ -39,15 +43,49 @@ def save_docs(save_path, np_docs):
      print(f"Doc context has been written to {save_path}")
 
 
+# Base request structure
+def create_request(document_text, custom_id):
+    return {
+        "custom_id": custom_id,
+        "method": "POST",
+        "url": "/v1/embeddings",  # Assuming you're using the embeddings endpoint
+        "body": {
+            "model": "text-embedding-3-small",  # Use your desired model
+            "input": document_text
+        }
+    }
+
+def create_batch_jsonl(jsonl_file_path, documents):
+     print(len(documents))
+     with open(jsonl_file_path, 'w') as jsonl_file:
+          for i, doc in enumerate(documents):
+               request = create_request(doc, custom_id=f"{i}")
+               jsonl_file.write(json.dumps(request) + '\n')
+
+
+def get_stored_documents(document_path):
+     # read the documents in pickle
+     with open(document_path, 'rb') as f:
+          np_documents = pickle.load(f)
+     return np_documents
+
+
+
 
 if __name__ == "__main__":
 
      hotpot_train_data_path = 'hotpot_train_v1.1.json'
-     save_file_name = "hotpot_context.pkl"
-     
+     docs_file_name = "hotpot_context.pkl"     
      np_docs = get_docs(hotpot_train_data_path)
      print(np_docs.shape)
-     save_docs(save_file_name, np_docs)
+     save_docs(docs_file_name, np_docs)
+     
+     # np_documents = get_stored_documents(docs_file_name)
+     # # create_batch_jsonl(jsonl_file_name, np_documents.tolist())
+     # jsonl_file_name = 'hotpot_train_v1.1_context.jsonl'
+     # create_batch_jsonl(jsonl_file_name, np_documents.tolist())
+     # print(f"Jsonl file has been written to {jsonl_file_name}, with toal of {len(np_documents)} documents")
+     
 
      
 
