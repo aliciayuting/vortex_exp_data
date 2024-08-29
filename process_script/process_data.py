@@ -9,6 +9,8 @@ warnings.filterwarnings("ignore")
 
 suffix = ".dat"
 
+MULTIPLIER = 100000
+
 
 def get_log_files(local_dir, suffix):
      log_files = []
@@ -56,6 +58,8 @@ def clean_log_dataframe(log_data, drop_warmup=30):
      df['querybatch_id'] = df['querybatch_id'].astype(int)
      df['cluster_id'] = df['cluster_id'].astype(int)
      df = df[df['querybatch_id'] >= drop_warmup ]
+     # drop df with 'querybatch_id' btween MULTIPLIER to MULTIPLIER*drop_warmup
+     df = df[~((df['tag'].between(40000, 50000)) & (df['querybatch_id'] // MULTIPLIER < drop_warmup))]
      return df
 
 
@@ -126,12 +130,11 @@ def process_udl2_dataframe(df):
 def process_udl3_dataframe(df):
      sub_component_latencies = {}
      udl3_df = df[(df['tag'] >= 40000) & (df['tag'] < 50000)]
-     # NOTE: qb_qid = query_batch_id * 100000 * QUERY_PER_BATCH + qid 
-     multiplier = 100000
-     udl3_df['batch_id'] = (udl3_df['querybatch_id'] // multiplier).astype(int)
-     udl3_df['qid'] = (udl3_df['querybatch_id'] % multiplier).astype(int)
+     # NOTE: qb_qid = query_batch_id * MULTIPLIER * QUERY_PER_BATCH + qid 
+     udl3_df['batch_id'] = (udl3_df['querybatch_id'] // MULTIPLIER).astype(int)
+     udl3_df['qid'] = (udl3_df['querybatch_id'] % MULTIPLIER).astype(int)
      
-     sub_component_latencies['udl3_time'] = get_durations(udl3_df, 40000, 40031, group_by_columns=['node_id','batch_id','qid'], duration_name='udl3_time')
+     sub_component_latencies['udl3_time'] = get_durations(udl3_df, 40000, 40030, group_by_columns=['node_id','batch_id','qid'], duration_name='udl3_time')
      sub_component_latencies['parse_blob_time'] = get_durations(udl3_df, 40000, 40001, group_by_columns=['node_id','batch_id','qid','cluster_id'], duration_name='parse_blob_time')
      # sub_component_latencies['check_not_fully_gather_time'] = get_durations(udl3_df, 40001, 40010, group_by_columns=['node_id','batch_id','qid','cluster_id'], duration_name='check_not_fully_gather_time')
      sub_component_latencies['query_finish_gather_time'] = get_durations(udl3_df, 40000, 40020, group_by_columns=['node_id','batch_id','qid'], duration_name='query_finish_gather_time')
@@ -145,18 +148,17 @@ def process_udl3_dataframe(df):
 
 def process_btw_udls(df):
      sub_component_latencies = {}
-     # NOTE: qb_qid = query_batch_id * 100000 * QUERY_PER_BATCH + qid 
-     multiplier = 100000
-     df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // multiplier).astype(int)
-
+     # NOTE: qb_qid = query_batch_id * MULTIPLIER * QUERY_PER_BATCH + qid 
+     
+     df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // MULTIPLIER).astype(int)
      sub_component_latencies['udl1_udl2_time'] = get_durations(df, 20050, 30000, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='udl1_udl2_time')
      sub_component_latencies['udl2_udl3_time'] = get_durations(df, 30050, 40000, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='udl2_udl3_time')
      return sub_component_latencies
 
+
 def process_btw_udls_nodes(df):
      sub_component_latencies = {}
-     multiplier = 100000
-     df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // multiplier).astype(int)
+     df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // MULTIPLIER).astype(int)
 
      same_node_df, diff_nodes_df = get_durations_based_on_nodes(df, 20050, 30000, group_by_columns=['querybatch_id','cluster_id'], duration_name='udl1_udl2')
      sub_component_latencies['udl1_udl2_same_node_time'] = same_node_df
@@ -165,6 +167,17 @@ def process_btw_udls_nodes(df):
      # sub_component_latencies['udl2_udl3_same_node_time'] = same_node_df2
      # sub_component_latencies['udl2_udl3_diff_nodes_time'] = diff_nodes_df2
      return sub_component_latencies
+
+
+
+def process_from_back_client(df):
+     sub_component_latencies = {}
+     sub_component_latencies['from_client_time'] = get_durations(df, 10000, 20000, group_by_columns=['node_id','querybatch_id'], duration_name='from_client_time')
+     # TODO: change it to handle batch > 1 case, there the group_by_columns should be ['node_id','querybatch_id','cluster_id']
+     df.loc[df['tag'] == 40030, 'querybatch_id'] = (df.loc[df['tag'] == 40030, 'querybatch_id'] // MULTIPLIER).astype(int)
+     sub_component_latencies['back_client_time'] = get_durations(df, 40030, 10100, group_by_columns=['node_id','querybatch_id'], duration_name='back_client_time')
+     return sub_component_latencies
+     
 
 def process_end_to_end_latency_dataframe(original_df, end_at_client=False):
      # # tag 10000 is the input send time, 40031 is the time when agg_udl finished put the result to cascade
@@ -181,7 +194,7 @@ def process_end_to_end_latency_dataframe(original_df, end_at_client=False):
                     })
      start_timestamp = df[df['tag'] == 10000].set_index(['client_id', 'batch_id'])['timestamp']
      df['batch_id'] = df.apply(
-          lambda row: int(row['batch_id'] // 100000) if row['tag'] == 40031 else row['batch_id'],
+          lambda row: int(row['batch_id'] // MULTIPLIER) if row['tag'] == 40031 else row['batch_id'],
           axis=1
      )
      df = df.merge(start_timestamp, on=['client_id', 'batch_id'], suffixes=('', '_start'))

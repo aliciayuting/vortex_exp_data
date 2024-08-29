@@ -14,6 +14,12 @@ read total_batch_count
 echo "QUERY_PER_BATCH:"
 read query_per_batch
 
+echo "QUERY_INTERVAL(us):"
+read query_interval
+
+echo "DATA_SET:"
+read data_set
+
 # 1. create configuration files for each node
 # 1.1. Write to local directory
 local_directory="./exp_data"
@@ -35,16 +41,14 @@ for ((i=0; i<${#node_ids[@]}; i++)); do
 done
 
 
+data_set_dir="setup/perf_data/${data_set}"
+run_client_file="run_client.sh"
+run_command="./latency_client -n ${total_batch_count} -b ${query_per_batch} -q ${data_set_dir} -i ${query_interval}"
+echo "${run_command}" > "${local_cfg_directory}/${run_client_file}"
 
-perf_config_file="perf_config.py"
-perf_config_file_path="${local_cfg_directory}/${perf_config_file}"
-line_numbers=(17 18)
-batch_count_sentence="TOTAL_BATCH_COUNT = ${total_batch_count}"
-sed "${line_numbers[0]}s/.*/${batch_count_sentence}/" "${perf_config_file_path}" > "${perf_config_file_path}.tmp"
-mv "${perf_config_file_path}.tmp" "${perf_config_file_path}"
-query_per_batch_sentence="QUERY_PER_BATCH = ${query_per_batch}"
-sed "${line_numbers[1]}s/.*/${query_per_batch_sentence}/" "${perf_config_file_path}" > "${perf_config_file_path}.tmp"
-mv "${perf_config_file_path}.tmp" "${perf_config_file_path}"
+run_client_init_file="run_init.sh"
+run_command="python setup/perf_test_setup.py ${data_set_dir}"
+echo "${run_command}" > "${local_cfg_directory}/${run_client_init_file}"
 
 dfgs_file="dfgs.json.tmp"
 dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
@@ -65,8 +69,10 @@ for ((i=0; i<${#ips[@]}; i++)); do
      node_id="${node_ids[i]}"
      cfg_file_path="${local_cfg_directory}/${node_id}/${derecho_cfg_file_name}"
      scp "${cfg_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/" 
-     perf_config_file_path="${local_cfg_directory}/${perf_config_file}"
-     scp "${perf_config_file_path}" "${node_name}:${remote_perfconfig_directory}/"
+     run_client_file_path="${local_cfg_directory}/${run_client_file}"
+     scp "${run_client_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
+     run_init_file_path="${local_cfg_directory}/${run_client_init_file}"
+     scp "${run_init_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
      dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
      scp "${dfgs_file_path}" "${node_name}:${remote_cfg_directory}/"
      layot_file_path="${local_cfg_directory}/layout.json.tmp"

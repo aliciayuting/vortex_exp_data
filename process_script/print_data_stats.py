@@ -62,7 +62,7 @@ def print_avgs(duration_df_dict, type_name):
 
 
 def print_e2e_stats(df):
-     duration_df = process_end_to_end_latency_dataframe(df)
+     duration_df = process_end_to_end_latency_dataframe(df, end_at_client=True)
      type_name="END-TO-END LATENCY"
      print("-------- ", type_name, " --------")
      print_duration_df(duration_df, column_name='e2e_latency')
@@ -97,6 +97,8 @@ def print_udls(df):
      duration_df_dict = process_udl3_dataframe(df)
      print_avgs(duration_df_dict, "UDL3 AGGREGATE (+ LLM GENERATE)")
      duration_df_dict = process_btw_udls(df)
+     from_back_client_dict = process_from_back_client(df)
+     duration_df_dict.update(from_back_client_dict)
      print_avgs(duration_df_dict, "BETWEEN UDLs")
 
 log_files = get_log_files(local_dir, suffix)

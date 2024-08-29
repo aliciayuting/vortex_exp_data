@@ -37,10 +37,21 @@ def get_docs(data_path):
      np_docs = np.array(docs)
      return np_docs
 
-def save_docs(save_path, np_docs):
+def get_questions(data_path):
+     questions = []
+     with open(data_path, 'r') as f:
+          data = json.load(f)
+          for d in data:
+               question = d['question']
+               questions.append(question)
+     print(f"Total number of questions {len(questions)}")
+     return questions
+
+
+def save_pkl(save_path, np_docs):
      with open(save_path, 'wb') as f:
           pickle.dump(np_docs, f)
-     print(f"Doc context has been written to {save_path}")
+     print(f"Content has been written to {save_path}")
 
 
 # Base request structure
@@ -74,18 +85,24 @@ def get_stored_documents(document_path):
 
 if __name__ == "__main__":
 
-     hotpot_train_data_path = 'hotpot_train_v1.1.json'
-     docs_file_name = "hotpot_context.pkl"     
-     np_docs = get_docs(hotpot_train_data_path)
-     print(np_docs.shape)
-     save_docs(docs_file_name, np_docs)
+     # 0. Get context doc
+     # hotpot_train_data_path = 'hotpot_train_v1.1.json'
+     # docs_file_name = "hotpot_context.pkl"     
+     # np_docs = get_docs(hotpot_train_data_path)
+     # print(np_docs.shape)
+     # save_pkl(docs_file_name, np_docs)
      
+     # 1. Output context to jsonl
      # np_documents = get_stored_documents(docs_file_name)
      # # create_batch_jsonl(jsonl_file_name, np_documents.tolist())
      # jsonl_file_name = 'hotpot_train_v1.1_context.jsonl'
      # create_batch_jsonl(jsonl_file_name, np_documents.tolist())
      # print(f"Jsonl file has been written to {jsonl_file_name}, with toal of {len(np_documents)} documents")
      
-
+     # 2. Get questions
+     hotpot_train_data_path = 'hotpot_train_v1.1.json'
+     questions_file_name = "hotpot_questions.pkl"
+     questions = get_questions(hotpot_train_data_path)
+     save_pkl(questions_file_name, questions)
      
 

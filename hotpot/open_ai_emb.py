@@ -30,7 +30,7 @@ def save_embeddings(save_pathname, embeddings):
      print(f"Embeddings have been written to {save_pathname}")
 
 
-def get_store_batch_embeddings(client,documents, batch_size=100, model="text-embedding-3-small"):
+def get_store_batch_embeddings(client,documents, batch_size=100, model="text-embedding-3-small", save_path="doc_embs/hotpot_train_v1.1_embeddings"):
      """
      This method only send docs in batch, but doesn't have price benefit; if want batch discount use 
      batch_file_upload method
@@ -39,14 +39,12 @@ def get_store_batch_embeddings(client,documents, batch_size=100, model="text-emb
      process_embedding_count = 0
      print("total num of batch:", len(documents)//batch_size)
      for i in range(0, len(documents), batch_size):
-          if i < 325000:
-               continue
           batch = documents[i:i + batch_size]
           batch_embeddings = get_embeddings(client,batch, model=model)
           all_embeddings.append(batch_embeddings)
           if i % 10 == 0:
                embs = np.vstack(all_embeddings)
-               intermediate_store_path = f"embs/hotpot_train_v1.1_embeddings_{i}.pkl"
+               intermediate_store_path = f"{save_path}_{i}.pkl"
                save_embeddings(intermediate_store_path, embs)
                all_embeddings = []
                print(f"Processed {i} batch, dim {embs.shape}")
@@ -86,21 +84,28 @@ if __name__ == "__main__":
      args = parser.parse_args()
      client = openai.Client(api_key=args.openai_key)
      
-     documents = []
-     with open('hotpot_context.pkl', 'rb') as f:
-          documents = pickle.load(f)
-     print(f"Total number of documents: {len(documents)}")
+     PROCESS_DOC = False
      
-     # method 1
-     # embeddings = get_embeddings(client, documents)
-     # print(embeddings.shape)
-     
-     # method 2
-     get_store_batch_embeddings(client, documents, batch_size=1000, model="text-embedding-3-small")
-     # print(embeddings.shape)
+     if PROCESS_DOC:
+          documents = []
+          with open('hotpot_context.pkl', 'rb') as f:
+               documents = pickle.load(f)
+          print(f"Total number of documents: {len(documents)}")
+          
+          # method 1
+          # embeddings = get_embeddings(client, documents)
+          # print(embeddings.shape)
+          
+          # method 2
+          get_store_batch_embeddings(client, documents, batch_size=1000, model="text-embedding-3-small", save_path="doc_embs/hotpot_train_v1.1_embeddings")
+          # print(embeddings.shape)
 
-     # method 3, cheapest method
-     # save_embeddings("hotpot_train_v1.1_embeddings.pkl", embeddings)
-     # jsonl_file_name = 'hotpot_train_v1.1_context.jsonl'
-     # batch_file_upload(client, jsonl_file_name)
-
+          # method 3, cheapest method
+          # save_embeddings("hotpot_train_v1.1_embeddings.pkl", embeddings)
+          # jsonl_file_name = 'hotpot_train_v1.1_context.jsonl'
+          # batch_file_upload(client, jsonl_file_name)
+     else:
+          questions = []
+          with open('hotpot_questions.pkl', 'rb') as f:
+               questions = pickle.load(f)
+          get_store_batch_embeddings(client, questions, batch_size=1000, model="text-embedding-3-small",save_path="question_embs/hotpot_train_v1.1_questions")

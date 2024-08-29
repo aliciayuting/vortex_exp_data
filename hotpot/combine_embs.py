@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 # Directory containing the pickle files
-directory = "embs/"
+directory = "question_embs/"
 
 # List all files in the directory with a .pkl extension
 pickle_files = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.pkl')]
@@ -22,7 +22,7 @@ combined_array = np.concatenate(arrays, axis=0)
 print(combined_array.shape)
 
 # Save the combined array into a new pickle file
-with open("hotpot_train_v1.1_full.pkl", 'wb') as f:
+with open("hotpot_train_v1.1_full_question.pkl", 'wb') as f:
     pickle.dump(combined_array, f)
 
 print("Combined array saved to combined_file.pkl")
