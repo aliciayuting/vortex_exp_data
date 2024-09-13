@@ -5,6 +5,7 @@ import tiktoken
 import pickle
 import os
 import csv
+import numpy as np
 
 HOTPOT_DATASET_LOC = '../hotpot_train_v1.1.json'
 #EMBEDDINGS_LOC = './jamalbigscience10k/'
@@ -135,7 +136,7 @@ print(len(docs))
 
 doc_emb_map = {0:{}}
 for i in range(len(docs)):
-    doc_emb_map[0][i] = docs[i]
+    doc_emb_map[0][i] = i
 
 os.makedirs(EMBEDDINGS_LOC, exist_ok=True)
 
@@ -146,7 +147,7 @@ with open(f'{EMBEDDINGS_LOC}cluster_0.pkl', 'wb') as f:
     pickle.dump(embeddings_list, f)
 
 with open(f'{EMBEDDINGS_LOC}doc_emb_map.pkl', 'wb') as f:
-    pickle.dump(embeddings_list, f)
+    pickle.dump(doc_emb_map, f)
 
 # Save docs to a pickle file
 with open(f'{EMBEDDINGS_LOC}doc_list.pkl', 'wb') as f:
@@ -178,4 +179,4 @@ with open(f'{EMBEDDINGS_LOC}questions_embeddings.pkl', 'wb') as f:
 #     writer = csv.writer(file)
 #     writer.writerows(questions_embeddings_list)  # Write all rows at once
 
-np.savetxt('query_emb.csv', questions_embeddings_list, delimiter=',', fmt='%f')
+np.savetxt(f'{EMBEDDINGS_LOC}query_emb.csv', questions_embeddings_list, delimiter=',', fmt='%f')
