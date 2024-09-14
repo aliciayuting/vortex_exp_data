@@ -8,9 +8,7 @@ import csv
 import numpy as np
 
 HOTPOT_DATASET_LOC = '../hotpot_train_v1.1.json'
-#EMBEDDINGS_LOC = './jamalbigscience10k/'
-#MODEL_NAME = "bigscience/sgpt-bloom-7b1-msmarco"
-EMBEDDINGS_LOC = './jamalbaai10k/'
+EMBEDDINGS_LOC = './dataset/'
 MODEL_NAME = "BAAI/bge-large-en-v1.5"
 
 NUM_DOCS = 1000

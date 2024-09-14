@@ -13,21 +13,12 @@ def load_pickle(file_path):
     return data
 
 
-folder = './jamalbaai10k/'
-#folder = './jamalembeddings/'
+folder = './dataset/'
 emb_list = load_pickle(f'{folder}embeddings_list.pkl')
 docs = load_pickle(f'{folder}doc_list.pkl')
 questions = load_pickle(f'{folder}questions.pkl')
 question_embeddings = data = np.loadtxt(f'{folder}query_emb.csv', delimiter=',')
 #question_embeddings = load_pickle(f'{folder}questions_embeddings.pkl')
-
-
-# emb_list = load_pickle('../hotpot_train_v1.1_full_emb3small.pkl')
-# docs = load_pickle('../hotpot10/doc_list.pkl')
-# questions = load_pickle('./jamalembeddings/questions.pkl')
-# question_embeddings = data = np.loadtxt('../hotpot10/query_emb.csv', delimiter=',')
-#print(len(emb_list))
-#emb_list = emb_list[:10000]
 
 
 print(len(emb_list))
