@@ -62,8 +62,7 @@ mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
 
 # 2. scp to remote directory
 
-remote_cfg_directory="~/workspace/cascade/build-Release/src/applications/rag_demo/cfg"
-remote_perfconfig_directory="~/workspace/cascade/build-Release/src/applications/rag_demo/perf_test"
+remote_cfg_directory="~/workspace/vortex/build-Release/cfg"
 for ((i=0; i<${#ips[@]}; i++)); do
      node_name="${node_names[i]}"
      node_id="${node_ids[i]}"
