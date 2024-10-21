@@ -1,0 +1,35 @@
+[
+    {
+        "id": "10346290-3ada-10ea-1a26-02120c220001",
+        "desc": "Vortex UDLs Dataflow graph",
+        "graph": [
+            {
+                "pathname": "/first",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["10a2c111-1100-1100-1000-0001ac110000"],
+                "user_defined_logic_stateful_list": ["singlethreaded"],
+                "user_defined_logic_config_list": [
+                    {
+                        "centroids_emb_prefix":"/rag/emb/centroids_obj",
+                        "emb_dim":1024,
+                        "top_num_centroids":2,
+                        "faiss_search_type":0
+                    }],
+                "destinations": [{"/second":"put"}]
+            },
+            {
+                "pathname": "/second",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["11a2c123-2200-21ac-1755-0002ac220000"],
+                "user_defined_logic_stateful_list": ["singlethreaded"],
+                "user_defined_logic_config_list": [
+                {
+                        "emb_dim":1024,
+                        "top_k":3,
+                        "faiss_search_type":0
+                }],
+                "destinations": [{"/final":"put"}]
+            }
+        ]
+    }
+]

@@ -13,7 +13,9 @@ warnings.filterwarnings("ignore")
 def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_file_name):
      duration_df = duration_df.reset_index(drop=True)
      plt.figure(figsize=(10, 5))
-     plt.plot(duration_df[plot_column_name], 'o')
+     # plt.plot(duration_df[plot_column_name], 'o')
+     plt.plot(duration_df['batch_id'], duration_df[plot_column_name], 'o')
+
      plt.title(title)
      plt.xlabel(xaxis)
      plt.ylabel(yaxis)
@@ -56,7 +58,7 @@ if __name__ == "__main__":
           dot_plot_latencies(duration_df_dict['udl1_time'], 'udl1_time', 'UDL1 Centroids Search Latency(us)', \
                               'Query ID', 'Latency (us)', save_file_name)
      elif print_type == "udl2":
-          duration_df_dict = process_udl2_dataframe(df)
+          duration_df_dict,_ = process_udl2_dataframe(df)
           dot_plot_latencies(duration_df_dict['udl2_time'], 'udl2_time', 'UDL2 Cluster Search Latency(us)', \
                               'Query ID', 'Latency (us)', save_file_name)
      elif print_type == "udl3":

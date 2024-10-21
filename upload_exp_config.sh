@@ -26,9 +26,12 @@ local_directory="./exp_data"
 local_cfg_directory="${local_directory}/cfg"
 derecho_cfg_file_name="derecho.cfg"
 
-ips=("192.168.9.30" "192.168.9.32" "192.168.9.31")
-node_names=("compute30" "compute32" "compute31")
-node_ids=("n0" "n1" "n2" )
+ips=("192.168.9.30" "192.168.9.32" "192.168.9.29" "192.168.9.31" "192.168.9.28")
+node_names=("compute30" "compute32" "compute29" "compute31" "compute28")
+node_ids=("n0" "n1" "n2" "n3" "n4")
+# ips=("192.168.9.29" "192.168.9.31" "192.168.9.28" )
+# node_names=("compute29"  "compute31" "compute28")
+# node_ids=("n0" "n1" "n2")
 line_numbers=(3 9)
 for ((i=0; i<${#node_ids[@]}; i++)); do
      file_path="${local_cfg_directory}/${node_ids[i]}/${derecho_cfg_file_name}"
@@ -41,24 +44,39 @@ for ((i=0; i<${#node_ids[@]}; i++)); do
 done
 
 
-data_set_dir="setup/perf_data/${data_set}"
+dim=960
+retrieve_doc_setting="false"
+
+data_set_dir="perf_data/${data_set}"
 run_client_file="run_client.sh"
-run_command="./latency_client -n ${total_batch_count} -b ${query_per_batch} -q ${data_set_dir} -i ${query_interval}"
+
+run_command="./latency_client -n ${total_batch_count} -b ${query_per_batch} -q ${data_set_dir} -i ${query_interval} -e ${dim}"
 echo "${run_command}" > "${local_cfg_directory}/${run_client_file}"
 
 run_client_init_file="run_init.sh"
-run_command="python setup/perf_test_setup.py ${data_set_dir}"
+run_command="python setup/perf_test_setup.py -p ${data_set_dir} -e ${dim}"
 echo "${run_command}" > "${local_cfg_directory}/${run_client_init_file}"
 
 dfgs_file="dfgs.json.tmp"
 dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
-line_numbers=(16 29)
+line_numbers=(16 29 14 27 43)
+
 centroid_search_type_sentence="                        \"faiss_search_type\":${search_type}"
 sed "${line_numbers[0]}s/.*/${centroid_search_type_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
 mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
 cluster_search_type_sentence="                        \"faiss_search_type\":${search_type}"
 sed "${line_numbers[1]}s/.*/${cluster_search_type_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
 mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
+emb_dim_sentence="                        \"emb_dim\":${dim},"
+sed "${line_numbers[2]}s/.*/${emb_dim_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
+mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
+sed "${line_numbers[3]}s/.*/${emb_dim_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
+mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
+retrieve_doc_setting_sentence="                        \"retrieve_docs\":${retrieve_doc_setting}"
+sed "${line_numbers[4]}s/.*/${retrieve_doc_setting_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
+mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
+
+
 
 # 2. scp to remote directory
 

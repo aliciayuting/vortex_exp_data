@@ -1,1 +1,1 @@
-python setup/perf_test_setup.py setup/perf_data/hotpot15
+python setup/perf_test_setup.py -p perf_data/gist -e 960

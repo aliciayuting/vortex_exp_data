@@ -10,10 +10,12 @@ fi
 local_directory="$1"
 
 
-ips=("192.168.99.30" "192.168.99.32" "192.168.99.31")
-node_names=("compute30" "compute32" "compute31")
-# ips=("compute25" "compute32" "compute31" "compute30" "compute29" "compute28" "compute26")
-node_ids=("n0" "n1" "n2")
+ips=("192.168.9.30" "192.168.9.32" "192.168.9.29" "192.168.9.31" "192.168.9.28")
+node_names=("compute30" "compute32" "compute29" "compute31" "compute28")
+node_ids=("n0" "n1" "n2" "n3" "n4")
+# ips=("192.168.9.30" "192.168.9.32" "192.168.9.31")
+# node_names=("compute30" "compute32" "compute31")
+# node_ids=("n0" "n1" "n2")
 
 file_suffix=".dat"
 

@@ -12,7 +12,7 @@ if len(sys.argv) < 2:
      print("Usage: python3 print_data_stats.py <data_dir>")
      exit()
 local_dir = sys.argv[1]
-print("print_type (e2e | udl1 | udl2 | udl3 | all):")
+print("print_type (e2e | udl1 | udl2 |udl3 | all):")
 print_type = input().strip()
 
 if print_type not in ["e2e", "udl1", "udl2", "udl3", "all"]:
@@ -68,18 +68,20 @@ def print_e2e_stats(df):
      print_duration_df(duration_df, column_name='e2e_latency')
      print("------------------------------------")
      duration_df.to_csv('debug.csv', index=False)
-
+     throughput = compute_throughput(duration_df)
+     print(f"Throughput: {throughput} Qps")
 
 def print_udl1_stats(df):
      duration_df_dict = process_udl1_dataframe(df)
      print_udl_stats(duration_df_dict, "UDL1 CENTROIDS SEARCH")
-     
+
 
 def print_udl2_stats(df):
-     duration_df_dict = process_udl2_dataframe(df)
+     duration_df_dict , batch_size_df= process_udl2_dataframe(df)
      # Note that deserialize_blob_time different because some blob contains more query sub-batches while others contain less
      print_udl_stats(duration_df_dict, "UDL2 CLUSTER SEARCH")
-     
+     print_duration_df(batch_size_df, 'batch_size')
+
 
 def print_udl3_stats(df):
      duration_df_dict = process_udl3_dataframe(df)
@@ -92,7 +94,7 @@ def print_udls(df):
      print_avgs(duration_df_dict, "END-TO-END LATENCY")
      duration_df_dict = process_udl1_dataframe(df)
      print_avgs(duration_df_dict, "UDL1 CENTROIDS SEARCH")
-     duration_df_dict = process_udl2_dataframe(df)
+     duration_df_dict,_ = process_udl2_dataframe(df)
      print_avgs(duration_df_dict, "UDL2 CLUSTER SEARCH")
      duration_df_dict = process_udl3_dataframe(df)
      print_avgs(duration_df_dict, "UDL3 AGGREGATE (+ LLM GENERATE)")
@@ -105,15 +107,16 @@ log_files = get_log_files(local_dir, suffix)
 log_data = get_log_files_dataframe(log_files)
 df = clean_log_dataframe(log_data,drop_warmup=drop_warmup_num)
 
-
 if print_type == "e2e":
      print_e2e_stats(df)
+     
      
 elif print_type == "udl1":
      print_udl1_stats(df)
      
 elif print_type == "udl2":
      print_udl2_stats(df)
+
      
 elif print_type == "udl3":
      print_udl3_stats(df)

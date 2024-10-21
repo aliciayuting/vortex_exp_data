@@ -77,6 +77,7 @@ def get_durations(df, start_tag, end_tag, group_by_columns=['node_id'], duration
           else:
                duration_results.append({group_by_columns[0]: group_values, duration_name: latency})
      duration_df = pd.DataFrame(duration_results)
+     print(f"{duration_name} duration size",len(duration_df))
      return duration_df
 
 
@@ -101,7 +102,7 @@ def get_durations_based_on_nodes(df, start_tag, end_tag, group_by_columns=['node
     
     same_node_df = pd.DataFrame(same_node_durations)
     different_node_df = pd.DataFrame(different_node_durations)
-    print(different_node_df)
+#     print(different_node_df)
     return same_node_df, different_node_df
 
 def process_udl1_dataframe(df):
@@ -116,16 +117,18 @@ def process_udl1_dataframe(df):
 
 def process_udl2_dataframe(df):
      sub_component_latencies = {}
-     sub_component_latencies['udl2_time'] = get_durations(df, 30000, 30100, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='udl2_time')
+     sub_component_latencies['udl2_time'] = get_durations(df, 30000, 30050, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='udl2_time')
      sub_component_latencies['load_cluster_embs_time'] = get_durations(df, 30010, 30011, group_by_columns=['node_id','cluster_id'], duration_name='load_cluster_embs_time')
      sub_component_latencies['deserialize_blob_time'] = get_durations(df, 30020, 30021, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='deserialize_blob_time')
-     sub_component_latencies['cluster_emb_search_time'] = get_durations(df, 30021, 30031, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='cluster_emb_search_time')
+     sub_component_latencies['add_to_batch_time'] = get_durations(df, 30021, 30022, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='add_to_batch_time')
+     sub_component_latencies['cluster_emb_search_time'] = get_durations(df, 30030, 30031, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='cluster_emb_search_time')
      sub_component_latencies['construct_new_keys_emb_time'] = get_durations(df, 30031, 30041, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='construct_new_keys_emb_time')
-     # missing next blob serialize time, if needed, add it to the loggings in code base
-     emit_df = get_durations(df, 30050, 30051, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='emit_next_udl_time')
-     emit_df.rename(columns={'node_id':'client_id','querybatch_id':'querybatch_id', 'cluster_id':'qid', 'emit_next_udl_time':'emit_next_udl_time'}, inplace=True)
-     sub_component_latencies['emit_next_udl_time'] = emit_df
-     return sub_component_latencies
+     sub_component_latencies['batch_search_time'] = get_durations(df, 30030, 30031, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='batch_search_time')
+     batch_size_df = df[(df['tag']==30032)]
+     batch_size_df = batch_size_df.rename(columns={'node_id': 'batch_size'})
+     print(batch_size_df)
+     return sub_component_latencies, batch_size_df
+
 
 def process_udl3_dataframe(df):
      sub_component_latencies = {}
@@ -179,11 +182,10 @@ def process_from_back_client(df):
      return sub_component_latencies
      
 
-def process_end_to_end_latency_dataframe(original_df, end_at_client=False):
+def process_end_to_end_latency_dataframe(original_df, end_at_client=True):
      # # tag 10000 is the input send time, 40031 is the time when agg_udl finished put the result to cascade
-     end_tag = 40031
-     if end_at_client:
-          end_tag = 10100
+     end_tag = 40031 if not end_at_client else 10100
+     
      filtered_df = original_df[original_df['tag'].isin([10000, end_tag])]
      df = filtered_df.rename(columns={
                     'tag': 'tag',
@@ -192,16 +194,29 @@ def process_end_to_end_latency_dataframe(original_df, end_at_client=False):
                     'querybatch_id': 'batch_id',
                     'cluster_id': 'qid'
                     })
-     start_timestamp = df[df['tag'] == 10000].set_index(['client_id', 'batch_id'])['timestamp']
+     start_df = df[df['tag'] == 10000].groupby(['client_id', 'batch_id','qid']).first().reset_index()
      df['batch_id'] = df.apply(
           lambda row: int(row['batch_id'] // MULTIPLIER) if row['tag'] == 40031 else row['batch_id'],
           axis=1
      )
-     df = df.merge(start_timestamp, on=['client_id', 'batch_id'], suffixes=('', '_start'))
-     df['e2e_latency'] = df['timestamp'] - df['timestamp_start']
-     df_queries = df[df['tag'] == end_tag]
-     result_df = df_queries[['client_id', 'batch_id', 'qid', 'e2e_latency']]
+     end_df = df[df['tag'] == end_tag].groupby(['client_id', 'batch_id','qid']).first().reset_index()
+     latency_df = pd.merge(
+        end_df, 
+        start_df, 
+        on=['client_id', 'batch_id','qid'], 
+        suffixes=('_end', '_start')
+    )
+     latency_df['e2e_latency'] = latency_df['timestamp_end'] - latency_df['timestamp_start']
+     # result_count = len(latency_df)
+     # unique_count = len(latency_df.drop_duplicates())
      # print(f"Number of rows:{result_count} \nNumber of unique (client_id, batch_id, qid) combinations: {unique_count}")
-     return result_df
+     return latency_df
 
+def compute_throughput(df):
+     start_time = df['timestamp_start'].min()
+     end_time = df['timestamp_end'].max()
+     total_time = round((end_time - start_time) / 1000000.0 , 3 )# convert to seconds
+     total_queries = len(df)
+     throughput = total_queries / total_time
+     return throughput
 

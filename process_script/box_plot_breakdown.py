@@ -17,7 +17,7 @@ def plot_box_breakdown(data, labels, save_file_name, use_color=False):
      plt.xticks(fontsize=15)
 
      plt.title("Latency Breakdown by Query", fontsize=15)
-     plt.xlabel("Time (ms)", fontsize=15)
+     plt.xlabel("Time (us)", fontsize=15)
      plt.ylabel("Segment Name", fontsize=15)
      if use_color:
           palette = sns.color_palette("tab10", len(data))
@@ -64,8 +64,10 @@ if __name__ == "__main__":
      udl1_2_df = bt_udls_times['udl1_udl2_time']
      udl1_2_times = udl1_2_df['udl1_udl2_time']
 
-     udl2_df = process_udl2_dataframe(df)['udl2_time']
-     udl2_times = udl2_df['udl2_time']
+     # udl2_df = process_udl2_dataframe(df)['udl2_time']
+     # udl2_times = udl2_df['udl2_time']
+     udl2_df = process_udl2_dataframe(df)[0]['batch_search_time']
+     udl2_times = udl2_df['batch_search_time']
      
      udl2_3_df = bt_udls_times['udl2_udl3_time']
      udl2_3_times = udl2_3_df['udl2_udl3_time']
@@ -83,7 +85,7 @@ if __name__ == "__main__":
           "UDL3-Aggregator",
           "UDL3:resultAgg",
           "UDL2-3",
-          "UDL2:objectmatch",
+          "UDL2:batchSearch",#"UDL2:objectmatch",
           "UDL1-2",
           "UDL1:clustermatch",
           "Aggregator-UDL1"
@@ -100,8 +102,8 @@ if __name__ == "__main__":
      ]
      
      if use_color:
-          plot_name = "latency_segments_box_plot_color.pdf"
+          plot_name = "box_plot_color" + local_dir.split("/")[-1] +".pdf"
      else:
-          plot_name = "latency_segments_box_plot.pdf"
+          plot_name = "box_plot" + local_dir.split("/")[-1] +".pdf"
      save_file_dir = os.path.join(save_dir, plot_name)
      plot_box_breakdown(data, labels, save_file_name=save_file_dir, use_color=use_color)

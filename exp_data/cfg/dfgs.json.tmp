@@ -11,9 +11,9 @@
                 "user_defined_logic_config_list": [
                     {
                         "centroids_emb_prefix":"/rag/emb/centroids_obj",
-                        "emb_dim":1024,
+                        "emb_dim":960,
                         "top_num_centroids":2,
-                        "faiss_search_type":0
+                        "faiss_search_type":1
                     }],
                 "destinations": [{"/rag/emb/clusters_search":"put"}]
             },
@@ -24,9 +24,9 @@
                 "user_defined_logic_stateful_list": ["singlethreaded"],
                 "user_defined_logic_config_list": [
                 {
-                        "emb_dim":1024,
+                        "emb_dim":960,
                         "top_k":3,
-                        "faiss_search_type":0
+                        "faiss_search_type":1
                 }],
                 "destinations": [{"/rag/generate/agg":"put"}]
             },
@@ -39,7 +39,8 @@
                 { 
                         "top_num_centroids":2,
                         "final_top_k":2,
-                        "include_llm":false
+                        "include_llm":false,
+                        "retrieve_docs":false
                 }],
                 "destinations": [{}]
             }
