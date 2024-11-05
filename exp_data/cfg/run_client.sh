@@ -1,1 +1,1 @@
-./latency_client -n 500 -b 2 -q perf_data/gist -i 100000 -e 960
+./latency_client -n 500 -b 1 -q perf_data/hotpot15 -i 500000 -e 1024 -t

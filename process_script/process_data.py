@@ -58,8 +58,10 @@ def clean_log_dataframe(log_data, drop_warmup=30):
      df['querybatch_id'] = df['querybatch_id'].astype(int)
      df['cluster_id'] = df['cluster_id'].astype(int)
      df = df[df['querybatch_id'] >= drop_warmup ]
+     
      # drop df with 'querybatch_id' btween MULTIPLIER to MULTIPLIER*drop_warmup
      df = df[~((df['tag'].between(40000, 50000)) & (df['querybatch_id'] // MULTIPLIER < drop_warmup))]
+     df[df['querybatch_id'] == 250 ].to_csv('querybatch_250.csv', index=False)
      return df
 
 
@@ -77,7 +79,7 @@ def get_durations(df, start_tag, end_tag, group_by_columns=['node_id'], duration
           else:
                duration_results.append({group_by_columns[0]: group_values, duration_name: latency})
      duration_df = pd.DataFrame(duration_results)
-     print(f"{duration_name} duration size",len(duration_df))
+     # print(f"{duration_name} duration size",len(duration_df))
      return duration_df
 
 
@@ -109,10 +111,9 @@ def process_udl1_dataframe(df):
      sub_component_latencies = {}
      sub_component_latencies['udl1_time'] = get_durations(df, 20000, 20100, group_by_columns=['node_id','querybatch_id'], duration_name='udl1_time')
      sub_component_latencies['centroids_load_time'] = get_durations(df, 20010, 20011, group_by_columns=['node_id'], duration_name='centroids_load_time')
-     sub_component_latencies['deserialize_blob_time'] = get_durations(df, 20020, 20021, group_by_columns=['node_id','querybatch_id'], duration_name='deserialize_blob_time')
+     sub_component_latencies['get_embeddings_time'] = get_durations(df, 20020, 20021, group_by_columns=['node_id','querybatch_id'], duration_name='get_embeddings_time')
      sub_component_latencies['centroids_search_time'] = get_durations(df, 20030, 20031, group_by_columns=['node_id','querybatch_id'], duration_name='centroids_search_time')     
      sub_component_latencies['combine_same_centroids_time'] = get_durations(df, 20031, 20041, group_by_columns=['node_id','querybatch_id'], duration_name='combine_same_centroids_time')
-     sub_component_latencies['emit_next_udl_time'] = get_durations(df, 20050, 20051, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='emit_next_udl_time')
      return sub_component_latencies
 
 def process_udl2_dataframe(df):
@@ -121,12 +122,11 @@ def process_udl2_dataframe(df):
      sub_component_latencies['load_cluster_embs_time'] = get_durations(df, 30010, 30011, group_by_columns=['node_id','cluster_id'], duration_name='load_cluster_embs_time')
      sub_component_latencies['deserialize_blob_time'] = get_durations(df, 30020, 30021, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='deserialize_blob_time')
      sub_component_latencies['add_to_batch_time'] = get_durations(df, 30021, 30022, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='add_to_batch_time')
-     sub_component_latencies['cluster_emb_search_time'] = get_durations(df, 30030, 30031, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='cluster_emb_search_time')
-     sub_component_latencies['construct_new_keys_emb_time'] = get_durations(df, 30031, 30041, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='construct_new_keys_emb_time')
+     # sub_component_latencies['cluster_emb_search_time'] = get_durations(df, 30030, 30031, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='cluster_emb_search_time')
+     # sub_component_latencies['construct_new_keys_emb_time'] = get_durations(df, 30031, 30041, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='construct_new_keys_emb_time')
      sub_component_latencies['batch_search_time'] = get_durations(df, 30030, 30031, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='batch_search_time')
      batch_size_df = df[(df['tag']==30032)]
      batch_size_df = batch_size_df.rename(columns={'node_id': 'batch_size'})
-     print(batch_size_df)
      return sub_component_latencies, batch_size_df
 
 
@@ -136,37 +136,34 @@ def process_udl3_dataframe(df):
      # NOTE: qb_qid = query_batch_id * MULTIPLIER * QUERY_PER_BATCH + qid 
      udl3_df['batch_id'] = (udl3_df['querybatch_id'] // MULTIPLIER).astype(int)
      udl3_df['qid'] = (udl3_df['querybatch_id'] % MULTIPLIER).astype(int)
-     
+     udl3_df[udl3_df['batch_id'] == 250 ].to_csv('3querybatch_250.csv', index=False)
      sub_component_latencies['udl3_time'] = get_durations(udl3_df, 40000, 40030, group_by_columns=['node_id','batch_id','qid'], duration_name='udl3_time')
      sub_component_latencies['parse_blob_time'] = get_durations(udl3_df, 40000, 40001, group_by_columns=['node_id','batch_id','qid','cluster_id'], duration_name='parse_blob_time')
      # sub_component_latencies['check_not_fully_gather_time'] = get_durations(udl3_df, 40001, 40010, group_by_columns=['node_id','batch_id','qid','cluster_id'], duration_name='check_not_fully_gather_time')
      sub_component_latencies['query_finish_gather_time'] = get_durations(udl3_df, 40000, 40020, group_by_columns=['node_id','batch_id','qid'], duration_name='query_finish_gather_time')
      sub_component_latencies['retrieve_doc_time'] = get_durations(udl3_df, 40020, 40021, group_by_columns=['node_id','batch_id','qid'], duration_name='retrieve_doc_time')
-     # sub_component_latencies['disk_load_answer_table_time'] = get_durations(udl3_df, 40120, 40121, group_by_columns=['node_id','cluster_id'], duration_name='disk_load_answer_table_time')
-     # sub_component_latencies['disk_load_doc_time'] = get_durations(udl3_df, 40220, 40221, group_by_columns=['node_id','cluster_id'], duration_name='disk_load_doc_time')
-     # TODO: could also add a dump json timestamp here
-     # sub_component_latencies['llm_generate_time'] = get_durations(udl3_df, 40021, 40030, group_by_columns=['querybatch_id'], duration_name='llm_generate_time')
-     sub_component_latencies['result_put_time'] = get_durations(udl3_df, 40030, 40031, group_by_columns=['node_id','batch_id','qid'], duration_name='result_put_time')
+     sub_component_latencies['llm_generate_time'] = get_durations(udl3_df, 40021, 40030, group_by_columns=['querybatch_id'], duration_name='llm_generate_time')
+     # sub_component_latencies['result_put_time'] = get_durations(udl3_df, 40030, 40031, group_by_columns=['node_id','batch_id','qid'], duration_name='result_put_time')
      return sub_component_latencies
 
 def process_btw_udls(df):
      sub_component_latencies = {}
      # NOTE: qb_qid = query_batch_id * MULTIPLIER * QUERY_PER_BATCH + qid 
-     
      df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // MULTIPLIER).astype(int)
-     sub_component_latencies['udl1_udl2_time'] = get_durations(df, 20050, 30000, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='udl1_udl2_time')
-     sub_component_latencies['udl2_udl3_time'] = get_durations(df, 30050, 40000, group_by_columns=['node_id','querybatch_id','cluster_id'], duration_name='udl2_udl3_time')
+     df.columns = [col.replace("querybatch_id", "batch_id") for col in df.columns]
+     sub_component_latencies['udl1_udl2_time'] = get_durations(df, 20050, 30000, group_by_columns=['node_id','batch_id','cluster_id'], duration_name='udl1_udl2_time')
+     sub_component_latencies['udl2_udl3_time'] = get_durations(df, 30050, 40000, group_by_columns=['node_id','batch_id','cluster_id'], duration_name='udl2_udl3_time')
      return sub_component_latencies
 
 
 def process_btw_udls_nodes(df):
      sub_component_latencies = {}
      df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // MULTIPLIER).astype(int)
-
-     same_node_df, diff_nodes_df = get_durations_based_on_nodes(df, 20050, 30000, group_by_columns=['querybatch_id','cluster_id'], duration_name='udl1_udl2')
+     df.columns = [col.replace("querybatch_id", "batch_id") for col in df.columns]
+     same_node_df, diff_nodes_df = get_durations_based_on_nodes(df, 20050, 30000, group_by_columns=['batch_id','cluster_id'], duration_name='udl1_udl2')
      sub_component_latencies['udl1_udl2_same_node_time'] = same_node_df
      sub_component_latencies['udl1_udl2_diff_nodes_time'] = diff_nodes_df
-     # same_node_df2, diff_nodes_df2 = get_durations_based_on_nodes(df, 30050, 40000, group_by_columns=['querybatch_id','cluster_id'], duration_name='udl2_udl3')
+     # same_node_df2, diff_nodes_df2 = get_durations_based_on_nodes(df, 30050, 40000, group_by_columns=['batch_id','cluster_id'], duration_name='udl2_udl3')
      # sub_component_latencies['udl2_udl3_same_node_time'] = same_node_df2
      # sub_component_latencies['udl2_udl3_diff_nodes_time'] = diff_nodes_df2
      return sub_component_latencies
@@ -175,10 +172,11 @@ def process_btw_udls_nodes(df):
 
 def process_from_back_client(df):
      sub_component_latencies = {}
-     sub_component_latencies['from_client_time'] = get_durations(df, 10000, 20000, group_by_columns=['node_id','querybatch_id'], duration_name='from_client_time')
+     df.columns = [col.replace("querybatch_id", "batch_id") for col in df.columns]
+     sub_component_latencies['from_client_time'] = get_durations(df, 10000, 20000, group_by_columns=['node_id','batch_id'], duration_name='from_client_time')
      # TODO: change it to handle batch > 1 case, there the group_by_columns should be ['node_id','querybatch_id','cluster_id']
-     df.loc[df['tag'] == 40030, 'querybatch_id'] = (df.loc[df['tag'] == 40030, 'querybatch_id'] // MULTIPLIER).astype(int)
-     sub_component_latencies['back_client_time'] = get_durations(df, 40030, 10100, group_by_columns=['node_id','querybatch_id'], duration_name='back_client_time')
+     df.loc[df['tag'] == 40030, 'batch_id'] = (df.loc[df['tag'] == 40030, 'batch_id'] // MULTIPLIER).astype(int)
+     sub_component_latencies['back_client_time'] = get_durations(df, 40030, 10100, group_by_columns=['node_id','batch_id'], duration_name='back_client_time')
      return sub_component_latencies
      
 

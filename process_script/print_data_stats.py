@@ -26,7 +26,7 @@ pd.set_option('display.max_columns', None)
 
 def print_duration_df(duration_df,  column_name='e2e_latency'):
      col_width = 25
-     print("number of rows: ".ljust(col_width), len(duration_df))
+     # print("number of rows: ".ljust(col_width), len(duration_df))
      print(f"average (us): ".ljust(col_width), round(duration_df[column_name].mean(),2))
      print(f"median (us): ".ljust(col_width), round(duration_df[column_name].median(),2))
      print(f"max (us): ".ljust(col_width), round(duration_df[column_name].max(),2))

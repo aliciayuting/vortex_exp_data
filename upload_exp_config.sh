@@ -5,8 +5,17 @@
 
 
 
-echo "search_type: 0: CPU flat search, 1: GPU flat search, 2: GPU IVF search"
-read search_type
+echo "centroids_search_type: 0: CPU flat search, 1: GPU flat search, 2: GPU IVF search"
+read centroids_search_type
+
+echo "cluster_search_type: 0: CPU flat search, 1: GPU flat search, 2: GPU IVF search"
+read cluster_search_type
+
+echo "USE_OPENAI_API: true/false"   
+read use_openai_api
+
+echo "RETRIEVE_DOC: true/false"   
+read retrieve_doc_setting
 
 echo "TOTAL_BATCH_COUNT:"
 read total_batch_count
@@ -19,6 +28,10 @@ read query_interval
 
 echo "DATA_SET:"
 read data_set
+
+echo "EMB_DIM:"
+read dim
+
 
 # 1. create configuration files for each node
 # 1.1. Write to local directory
@@ -44,27 +57,30 @@ for ((i=0; i<${#node_ids[@]}; i++)); do
 done
 
 
-dim=960
-retrieve_doc_setting="false"
-
 data_set_dir="perf_data/${data_set}"
 run_client_file="run_client.sh"
 
 run_command="./latency_client -n ${total_batch_count} -b ${query_per_batch} -q ${data_set_dir} -i ${query_interval} -e ${dim}"
+if [ "$use_openai_api" = "true" ]; then
+    run_command+=" -t"
+fi
 echo "${run_command}" > "${local_cfg_directory}/${run_client_file}"
 
 run_client_init_file="run_init.sh"
 run_command="python setup/perf_test_setup.py -p ${data_set_dir} -e ${dim}"
+if [ "$retrieve_doc_setting" = "true" ]; then
+    run_command+=" -doc"
+fi
 echo "${run_command}" > "${local_cfg_directory}/${run_client_init_file}"
 
 dfgs_file="dfgs.json.tmp"
 dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
-line_numbers=(16 29 14 27 43)
+line_numbers=(16 33 14 31 47 17 46)
 
-centroid_search_type_sentence="                        \"faiss_search_type\":${search_type}"
+centroid_search_type_sentence="                        \"faiss_search_type\":${centroids_search_type},"
 sed "${line_numbers[0]}s/.*/${centroid_search_type_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
 mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
-cluster_search_type_sentence="                        \"faiss_search_type\":${search_type}"
+cluster_search_type_sentence="                        \"faiss_search_type\":${cluster_search_type}"
 sed "${line_numbers[1]}s/.*/${cluster_search_type_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
 mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
 emb_dim_sentence="                        \"emb_dim\":${dim},"
@@ -72,8 +88,14 @@ sed "${line_numbers[2]}s/.*/${emb_dim_sentence}/" "${dfgs_file_path}" > "${dfgs_
 mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
 sed "${line_numbers[3]}s/.*/${emb_dim_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
 mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
-retrieve_doc_setting_sentence="                        \"retrieve_docs\":${retrieve_doc_setting}"
+retrieve_doc_setting_sentence="                        \"retrieve_docs\":${retrieve_doc_setting},"
 sed "${line_numbers[4]}s/.*/${retrieve_doc_setting_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
+mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
+include_encoder_sentence="                        \"include_encoder\":${use_openai_api},"
+sed "${line_numbers[5]}s/.*/${include_encoder_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
+mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
+include_llm_sentence="                        \"include_llm\":${use_openai_api},"
+sed "${line_numbers[6]}s/.*/${include_llm_sentence}/" "${dfgs_file_path}" > "${dfgs_file_path}.tmp"
 mv "${dfgs_file_path}.tmp" "${dfgs_file_path}"
 
 
