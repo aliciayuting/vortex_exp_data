@@ -4,12 +4,24 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import warnings
 import re
+import json
 
 warnings.filterwarnings("ignore")
 
 suffix = ".dat"
 
 MULTIPLIER = 100000
+
+def get_dfg_file(local_dir):
+     os.path.join(local_dir, "dfgs.json.tmp")
+     return os.path.join(local_dir, "dfgs.json.tmp")
+
+def get_dfg_information(dfg_file):
+     information = {}
+     with open(dfg_file) as f:
+          dfg_data = json.load(f)
+     information['top_num_centroids'] = dfg_data[0]["graph"][0]["user_defined_logic_config_list"][0]["top_num_centroids"]
+     return information
 
 
 def get_log_files(local_dir, suffix):
@@ -156,17 +168,17 @@ def process_btw_udls(df):
      return sub_component_latencies
 
 
-def process_btw_udls_nodes(df):
-     sub_component_latencies = {}
-     df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // MULTIPLIER).astype(int)
-     df.columns = [col.replace("querybatch_id", "batch_id") for col in df.columns]
-     same_node_df, diff_nodes_df = get_durations_based_on_nodes(df, 20050, 30000, group_by_columns=['batch_id','cluster_id'], duration_name='udl1_udl2')
-     sub_component_latencies['udl1_udl2_same_node_time'] = same_node_df
-     sub_component_latencies['udl1_udl2_diff_nodes_time'] = diff_nodes_df
-     # same_node_df2, diff_nodes_df2 = get_durations_based_on_nodes(df, 30050, 40000, group_by_columns=['batch_id','cluster_id'], duration_name='udl2_udl3')
-     # sub_component_latencies['udl2_udl3_same_node_time'] = same_node_df2
-     # sub_component_latencies['udl2_udl3_diff_nodes_time'] = diff_nodes_df2
-     return sub_component_latencies
+# def process_btw_udls_nodes(df):
+#      sub_component_latencies = {}
+#      df.loc[df['tag'] == 40000, 'querybatch_id'] = (df.loc[df['tag'] == 40000, 'querybatch_id'] // MULTIPLIER).astype(int)
+#      df.columns = [col.replace("querybatch_id", "batch_id") for col in df.columns]
+#      same_node_df, diff_nodes_df = get_durations_based_on_nodes(df, 20050, 30000, group_by_columns=['batch_id','cluster_id'], duration_name='udl1_udl2')
+#      sub_component_latencies['udl1_udl2_same_node_time'] = same_node_df
+#      sub_component_latencies['udl1_udl2_diff_nodes_time'] = diff_nodes_df
+#      # same_node_df2, diff_nodes_df2 = get_durations_based_on_nodes(df, 30050, 40000, group_by_columns=['batch_id','cluster_id'], duration_name='udl2_udl3')
+#      # sub_component_latencies['udl2_udl3_same_node_time'] = same_node_df2
+#      # sub_component_latencies['udl2_udl3_diff_nodes_time'] = diff_nodes_df2
+#      return sub_component_latencies
 
 
 
