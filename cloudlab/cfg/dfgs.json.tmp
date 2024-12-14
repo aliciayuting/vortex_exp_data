@@ -1,0 +1,61 @@
+[
+    {
+        "id": "10346290-3ada-10ea-1a26-02120c220001",
+        "desc": "Vortex UDLs Dataflow graph",
+        "graph": [
+            {
+                "pathname": "/rag/emb/centroids_search",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["10a2c111-1100-1100-1000-0001ac110000"],
+                "user_defined_logic_stateful_list": ["singlethreaded"],
+                "user_defined_logic_config_list": [
+                    {
+                        "centroids_emb_prefix":"/rag/emb/centroids_obj",
+                        "emb_dim":960,
+                        "top_num_centroids":2,
+                        "faiss_search_type":0,
+                        "include_encoder":false,
+                        "encoder_name":"text-embedding-3-small",
+                        "openai_api_key":"your_openai_api_key",
+                        "emit_key_prefix":"/rag/emb/clusters_search"
+                    }],
+                "destinations": [{"/rag/emb/clusters_search":"put"}]
+            },
+            {
+                "pathname": "/rag/emb/clusters_search",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["11a2c123-2200-21ac-1755-0002ac220000"],
+                "user_defined_logic_stateful_list": ["singlethreaded"],
+                "user_defined_logic_config_list": [
+                {
+                        "emb_dim":960,
+                        "top_k":85,
+                        "faiss_search_type":1,
+                        "batch_time_us":1000,
+                        "batch_min_size":1,
+                        "num_threads":1
+                }],
+                "destinations": [{"/rag/generate/agg":"put"}]
+            },
+            {
+                "pathname": "/rag/generate/agg",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["11a3c123-3300-31ac-1866-0003ac330000"],
+                "user_defined_logic_stateful_list": ["singlethreaded"],
+                "user_defined_logic_config_list": [
+                { 
+                        "top_num_centroids":2,
+                        "final_top_k":100,
+                        "include_llm":false,
+                        "retrieve_docs":false,
+                        "openai_api_key":"your_openai_api_key",
+                        "llm_model_name":"gpt-4o-mini",
+                        "batch_time_us":1000,
+                        "min_batch_size":1,
+                        "max_batch_size":10
+                }],
+                "destinations": [{}]
+            }
+        ]
+    }
+]
