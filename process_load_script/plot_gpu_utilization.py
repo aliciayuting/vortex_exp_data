@@ -8,6 +8,11 @@ gpu_plot_file = 'gpu_utilization_plot.png'
 mem_plot_file = 'gpu_mem_utilization_plot.png'
 
 
+''' 
+The input file 'gpu_utilization.dat' contains fields 'unix_time', '%gpu',
+'%mem', 'memory_total', 'memory_free', 'memory_used'.
+Generates an output file including only fields 'unix_time', '%gpu'.
+'''
 def remove_columns_gpu():
     columns_to_remove = [2, 3, 4, 5]
 
@@ -23,6 +28,11 @@ def remove_columns_gpu():
     print(f"Columns removed and saved to {gpu_trimmed_file}")
 
 
+''' 
+The input file 'gpu_utilization.dat' contains fields 'unix_time', '%gpu',
+'%mem', 'memory_total', 'memory_free', 'memory_used'.
+Generates an output file including only fields 'unix_time', '%mem'.
+'''
 def remove_columns_mem():
     columns_to_remove = [1, 3, 4, 5]
 
@@ -38,6 +48,9 @@ def remove_columns_mem():
     print(f"Columns removed and saved to {mem_trimmed_file}")
 
 
+'''
+Plots GPU utilization over time.
+'''
 def plot_gpu():
     timestamps = []
     gpu_usage = []
@@ -71,6 +84,9 @@ def plot_gpu():
     print(f"Plot saved to {gpu_plot_file}")
 
 
+'''
+Plots GPU memory utilization over time.
+'''
 def plot_mem():
     timestamps = []
     mem_usage = []

@@ -7,6 +7,12 @@ trimmed_file = 'gpu_by_process_trimmed.dat'
 mem_plot_file = 'gpu_mem_utilization_by_process.png'
 
 
+''' 
+The input file 'gpu_by_process.dat' contains fields 'unix_time',
+'process_name', 'pid', 'used_memory'. 
+Generates an output file including only fields 'unix_time', 'pid',
+'used_memory'.
+'''
 def remove_columns():
     columns_to_remove = [1]
 
@@ -22,6 +28,9 @@ def remove_columns():
     print(f"Columns removed and saved to {trimmed_file}")
 
 
+'''
+Plots per-process GPU memory utilization over time.
+'''
 def plot_gpu_memory():
     process_data = defaultdict(list)
 
