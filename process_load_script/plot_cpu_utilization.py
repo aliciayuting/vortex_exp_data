@@ -9,6 +9,12 @@ cpu_plot_file = 'cpu_utilization_plot.png'
 mem_plot_file = 'mem_utilization_plot.png'
 
 
+''' 
+The input file 'cpu_utilization.dat' contains fields 'unix_time', 'pid',
+'user', 'priority', 'nice', 'virtual_memory', 'resident_memory',
+'shared_memory', 'status', '%cpu', '%mem', 'cpu_time', 'command'.
+Generates an output file including only fields 'unix_time', 'pid', '%cpu'.
+'''
 def remove_columns_cpu():
     columns_to_remove = [2, 3, 4, 5, 6, 7, 8, 10, 11, 12]
 
@@ -24,6 +30,12 @@ def remove_columns_cpu():
     print(f"Columns removed and saved to {cpu_trimmed_file}")
 
 
+''' 
+The input file 'cpu_utilization.dat' contains fields 'unix_time', 'pid',
+'user', 'priority', 'nice', 'virtual_memory', 'resident_memory',
+'shared_memory', 'status', '%cpu', '%mem', 'cpu_time', 'command'.
+Generates an output file including only fields 'unix_time', 'pid', '%mem'.
+'''
 def remove_columns_mem():
     columns_to_remove = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12]
 
@@ -39,6 +51,9 @@ def remove_columns_mem():
     print(f"Columns removed and saved to {mem_trimmed_file}")
 
 
+'''
+Plots per-process CPU utilization over time.
+'''
 def plot_cpu():
     process_data = defaultdict(list)
 
@@ -76,6 +91,9 @@ def plot_cpu():
     print(f"Plot saved to {cpu_plot_file}")
 
 
+'''
+Plots per-process memory utilization over time.
+'''
 def plot_mem():
     process_data = defaultdict(list)
 
