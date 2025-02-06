@@ -3,7 +3,8 @@
 * Provide data file directory and output directory as first and second command line arguments, respectively
 * Expects `data.json` file in current directory
 * `data.json` should list all segments to generate box plots for
-Example:
+
+**Example:**
 ```data.json
 {
     "drop": 3, // specify how many samples from the top to drop
