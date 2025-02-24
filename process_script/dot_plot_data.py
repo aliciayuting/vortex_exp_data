@@ -36,9 +36,9 @@ if __name__ == "__main__":
           exit()
      local_dir = sys.argv[1]
      save_dir = sys.argv[2]
-     print("print_type (e2e | udl1 | udl2 | udl3 | udl1-2 | udl2-3 | udl1-2-same | udl1-2-diff | udl2-3-same | udl2-3-diff):")
+     print("print_type (e2e | last_udl | udl2 | udl3 | udl1-2 | udl2-3 | udl1-2-same | udl1-2-diff | udl2-3-same | udl2-3-diff):")
      print_type = input()
-     if print_type not in ["e2e", "udl1", "udl2", "udl3", "udl1-2", "udl2-3", "udl1-2-same", "udl1-2-diff", "udl2-3-same", "udl2-3-diff"]:
+     if print_type not in ["e2e", "last_udl", "udl2", "udl3", "udl1-2", "udl2-3", "udl1-2-same", "udl1-2-diff", "udl2-3-same", "udl2-3-diff"]:
           print("Invalid print_type")
           exit()
      
@@ -50,44 +50,44 @@ if __name__ == "__main__":
      df = clean_log_dataframe(log_data, drop_warmup=2)
      
      if print_type == "e2e":
-          duration_df = process_end_to_end_latency_dataframe(df)
-          dot_plot_latencies(duration_df, 'e2e_latency', 'End-to-End Latency(us)', \
+          duration_df = process_e2e_dataframe(df)
+          dot_plot_latencies(duration_df['e2e_time'], 'e2e_latency', 'End-to-End Latency(us)', \
                               'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl1":
-          duration_df_dict = process_udl1_dataframe(df)
-          dot_plot_latencies(duration_df_dict['udl1_time'], 'udl1_time', 'UDL1 Centroids Search Latency(us)', \
+     elif print_type == "last_udl":
+          duration_df_dict = process_last_udl_dataframe(df)
+          dot_plot_latencies(duration_df_dict['last_udl_time'], 'last_udl_time', 'last_udl_time Latency(us)', \
                               'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl2":
-          duration_df_dict,_ = process_udl2_dataframe(df)
-          dot_plot_latencies(duration_df_dict['udl2_time'], 'udl2_time', 'UDL2 Cluster Search Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl3":
-          duration_df_dict = process_udl3_dataframe(df)
-          dot_plot_latencies(duration_df_dict['udl3_time'], 'udl3_time', 'UDL3 Centroids Search Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl1-2":
-          duration_df_dict = process_btw_udls(df)
-          dot_plot_latencies(duration_df_dict['udl1_udl2_time'], 'udl1_udl2_time', 'UDL1-UDL2 Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl2-3":
-          duration_df_dict = process_btw_udls(df)
-          dot_plot_latencies(duration_df_dict['udl2_udl3_time'], 'udl2_udl3_time', 'UDL2-UDL3 Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl1-2-same":
-          duration_df_dict = process_btw_udls_nodes(df)
-          dot_plot_latencies(duration_df_dict['udl1_udl2_same_node_time'], 'udl1_udl2_same_node_time', 'UDL1-UDL2 SameNode Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl1-2-diff":
-          duration_df_dict = process_btw_udls_nodes(df)
-          dot_plot_latencies(duration_df_dict['udl1_udl2_diff_nodes_time'], 'udl1_udl2_diff_nodes_time', 'UDL1-UDL2 DiffNode Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl2-3-same":
-          duration_df_dict = process_btw_udls_nodes(df)
-          dot_plot_latencies(duration_df_dict['udl2_udl3_same_node_time'], 'udl2_udl3_same_node_time', 'UDL2-UDL3 SameNode Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
-     elif print_type == "udl2-3-diff":
-          duration_df_dict = process_btw_udls_nodes(df)
-          dot_plot_latencies(duration_df_dict['udl2_udl3_diff_nodes_time'], 'udl2_udl3_diff_nodes_time', 'UDL2-UDL3 DiffNode Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
+     # elif print_type == "udl2":
+     #      duration_df_dict,_ = process_udl2_dataframe(df)
+     #      dot_plot_latencies(duration_df_dict['udl2_time'], 'udl2_time', 'UDL2 Cluster Search Latency(us)', \
+     #                          'Query ID', 'Latency (us)', save_file_name)
+     # elif print_type == "udl3":
+     #      duration_df_dict = process_udl3_dataframe(df)
+     #      dot_plot_latencies(duration_df_dict['udl3_time'], 'udl3_time', 'UDL3 Centroids Search Latency(us)', \
+     #                          'Query ID', 'Latency (us)', save_file_name)
+     # elif print_type == "udl1-2":
+     #      duration_df_dict = process_btw_udls(df)
+     #      dot_plot_latencies(duration_df_dict['udl1_udl2_time'], 'udl1_udl2_time', 'UDL1-UDL2 Latency(us)', \
+     #                          'Query ID', 'Latency (us)', save_file_name)
+     # elif print_type == "udl2-3":
+     #      duration_df_dict = process_btw_udls(df)
+     #      dot_plot_latencies(duration_df_dict['udl2_udl3_time'], 'udl2_udl3_time', 'UDL2-UDL3 Latency(us)', \
+     #                          'Query ID', 'Latency (us)', save_file_name)
+     # elif print_type == "udl1-2-same":
+     #      duration_df_dict = process_btw_udls_nodes(df)
+     #      dot_plot_latencies(duration_df_dict['udl1_udl2_same_node_time'], 'udl1_udl2_same_node_time', 'UDL1-UDL2 SameNode Latency(us)', \
+     #                          'Query ID', 'Latency (us)', save_file_name)
+     # elif print_type == "udl1-2-diff":
+     #      duration_df_dict = process_btw_udls_nodes(df)
+     #      dot_plot_latencies(duration_df_dict['udl1_udl2_diff_nodes_time'], 'udl1_udl2_diff_nodes_time', 'UDL1-UDL2 DiffNode Latency(us)', \
+     #                          'Query ID', 'Latency (us)', save_file_name)
+     # elif print_type == "udl2-3-same":
+     #      duration_df_dict = process_btw_udls_nodes(df)
+     #      dot_plot_latencies(duration_df_dict['udl2_udl3_same_node_time'], 'udl2_udl3_same_node_time', 'UDL2-UDL3 SameNode Latency(us)', \
+     #                          'Query ID', 'Latency (us)', save_file_name)
+     # elif print_type == "udl2-3-diff":
+     #      duration_df_dict = process_btw_udls_nodes(df)
+     #      dot_plot_latencies(duration_df_dict['udl2_udl3_diff_nodes_time'], 'udl2_udl3_diff_nodes_time', 'UDL2-UDL3 DiffNode Latency(us)', \
+     #                          'Query ID', 'Latency (us)', save_file_name)
 
 
