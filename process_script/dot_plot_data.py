@@ -40,7 +40,7 @@ if __name__ == "__main__":
      save_dir = sys.argv[2]
      
      list_of_type = ["e2e", "last_udl", "udlA", "udlB", "udlD", "udlE", "c_udla", "c_udlb", \
-          "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3"]
+          "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput"]
      print(f"print_type {list_of_type}")
      print_type = input()
      if print_type not in list_of_type:
@@ -136,6 +136,11 @@ if __name__ == "__main__":
           duration_df_dict = process_udlD_dataframe(df)
           dot_plot_latencies(duration_df_dict[print_type], print_type, f'{print_type} Latency(us)', \
                               'Query ID', 'Latency (us)', save_file_name)
+          
+     elif print_type == list_of_type[15]:
+          throughput = compute_throughput(df)
+          print(f"Throughput: {throughput} Qps")
+          
      # elif print_type == "udl2":
      #      duration_df_dict,_ = process_udl2_dataframe(df)
      #      dot_plot_latencies(duration_df_dict['udl2_time'], 'udl2_time', 'UDL2 Cluster Search Latency(us)', \

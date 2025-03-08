@@ -69,7 +69,7 @@ def clean_log_dataframe(log_data, drop_warmup=30):
      df['timestamp'] = df['timestamp']/1000 # convert to microseconds
      df['querybatch_id'] = df['querybatch_id'].astype(int)
      df['cluster_id'] = df['cluster_id'].astype(int)
-     # df = df[df['querybatch_id'] >= drop_warmup ]
+     df = df[df['querybatch_id'] >= drop_warmup ]
      
      # # drop df with 'querybatch_id' btween MULTIPLIER to MULTIPLIER*drop_warmup
      # df = df[~((df['tag'].between(40000, 50000)) & (df['querybatch_id'] // MULTIPLIER < drop_warmup))]
@@ -159,6 +159,17 @@ def process_udlD_dataframe(df):
      sub_component_latencies['udlD_2'] = get_durations(df, 30011, 30010, group_by_columns=['node_id'], duration_name='udlD_2')
      sub_component_latencies['udlD_3'] = get_durations(df, 30020, 30011, group_by_columns=['node_id'], duration_name='udlD_3')
      return sub_component_latencies
+
+
+
+def compute_throughput(df):
+     start_time = df['timestamp'].min()
+     end_time = df['timestamp'].max()
+     total_time = round((end_time - start_time) / 1000000.0 , 3 )# convert to seconds
+     # compute total_queries in terms of the unique querybatch_id
+     total_queries = len(df['node_id'].unique())
+     throughput = total_queries / total_time
+     return throughput
 
 # def process_udl1_dataframe(df):
 #      sub_component_latencies = {}
