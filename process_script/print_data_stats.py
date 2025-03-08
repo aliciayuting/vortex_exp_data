@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore")
 
 arguments = sys.argv
 if len(sys.argv) < 2:
-     print("Usage: python3 print_data_stats.py <data_dir>")
+     print("Usage: python print_data_stats.py <data_dir>")
      exit()
 local_dir = sys.argv[1]
 print("print_type (e2e | udl1 | udl2 |udl3 | all):")
@@ -61,65 +61,52 @@ def print_avgs(duration_df_dict, type_name):
      # print("-------------------------------------------")
 
 
-def print_e2e_stats(df):
-     duration_df = process_end_to_end_latency_dataframe(df, end_at_client=True)
-     type_name="END-TO-END LATENCY"
-     print("-------- ", type_name, " --------")
-     print_duration_df(duration_df, column_name='e2e_latency')
-     print("------------------------------------")
-     duration_df.to_csv('debug.csv', index=False)
-     throughput = compute_throughput(duration_df)
-     print(f"Throughput: {throughput} Qps")
-
-def print_udl1_stats(df):
-     duration_df_dict = process_udl1_dataframe(df)
-     print_udl_stats(duration_df_dict, "UDL1 CENTROIDS SEARCH")
-
-
-def print_udl2_stats(df):
-     duration_df_dict , batch_size_df= process_udl2_dataframe(df)
-     # Note that deserialize_blob_time different because some blob contains more query sub-batches while others contain less
-     print_udl_stats(duration_df_dict, "UDL2 CLUSTER SEARCH")
-     print_duration_df(batch_size_df, 'batch_size')
-
-
-def print_udl3_stats(df):
-     duration_df_dict = process_udl3_dataframe(df)
-     print_udl_stats(duration_df_dict, "UDL3 AGGREGATE (+ LLM GENERATE)")
-
-
-def print_udls(df):
-     duration_df_dict = {}
-     duration_df_dict["e2e_latency"] = process_end_to_end_latency_dataframe(df)
-     print_avgs(duration_df_dict, "END-TO-END LATENCY")
-     duration_df_dict = process_udl1_dataframe(df)
-     print_avgs(duration_df_dict, "UDL1 CENTROIDS SEARCH")
-     duration_df_dict,_ = process_udl2_dataframe(df)
-     print_avgs(duration_df_dict, "UDL2 CLUSTER SEARCH")
-     duration_df_dict = process_udl3_dataframe(df)
-     print_avgs(duration_df_dict, "UDL3 AGGREGATE (+ LLM GENERATE)")
-     duration_df_dict = process_btw_udls(df)
-     from_back_client_dict = process_from_back_client(df)
-     duration_df_dict.update(from_back_client_dict)
-     print_avgs(duration_df_dict, "BETWEEN UDLs")
-
-log_files = get_log_files(local_dir, suffix)
-log_data = get_log_files_dataframe(log_files)
-df = clean_log_dataframe(log_data,drop_warmup=drop_warmup_num)
-
-if print_type == "e2e":
-     print_e2e_stats(df)
+if __name__ == "__main__":
+     arguments = sys.argv
+     if len(sys.argv) < 3:
+          print("Usage: python3 dot_plot_data.py <data_dir> <save_dir> ")
+          exit()
+     local_dir = sys.argv[1]
+     save_dir = sys.argv[2]
+     
+     list_of_type = ["e2e", "last_udl", "udlA", "udlB", "udlD", "udlE", "c_udla", "c_udlb", \
+          "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput"]
+     print(f"print_type {list_of_type}")
+     print_type = input()
+     if print_type not in list_of_type:
+          print("Invalid print_type")
+          exit()
      
      
-elif print_type == "udl1":
-     print_udl1_stats(df)
      
-elif print_type == "udl2":
-     print_udl2_stats(df)
+     name =  "dotplot_" + print_type + local_dir.split("/")[-1] + ".pdf"
+     save_file_name = os.path.join(save_dir, name)
 
+     log_files = get_log_files(local_dir, suffix)
+     log_data = get_log_files_dataframe(log_files)
+     # print(f"log data: {log_data}")
+     df = clean_log_dataframe(log_data, drop_warmup=50)
      
-elif print_type == "udl3":
-     print_udl3_stats(df)
+     if print_type == "e2e":
+          
+          duration_df = process_e2e_dataframe(df)
+          print_duration_df(duration_df)
+          
+          
+     elif print_type == "c_mono":
+          duration_df_dict = process_c_mono_dataframe(df)
+          print_udl_stats(duration_df_dict, "c_mono")
      
-elif print_type == "all":
-     print_udls(df)
+     elif print_type == "last_udl":
+          duration_df_dict = process_last_udl_dataframe(df)
+          print_udl_stats(duration_df_dict, "last_udl")
+     
+     for i in range(len(list_of_type)):
+          if print_type == list_of_type[i] and i >= 2 and i <=14:
+               duration_df_dict = process_bw_udls_dataframe(df)
+               print_duration_df(duration_df_dict[print_type], column_name=print_type)
+     
+          
+     if print_type == list_of_type[15]:
+          throughput = compute_throughput(df)
+          print(f"Throughput: {throughput} Qps")
