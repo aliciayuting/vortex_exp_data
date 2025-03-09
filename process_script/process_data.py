@@ -186,8 +186,8 @@ def compute_throughput(df):
 
 def get_batch_size(df):
      sub_component_batch_sizes = {}
-     sub_component_batch_sizes["udlB_exec"] = get_batch_size(df, 20021, group_by_columns=['udlB_exec'], duration_name='udlB_exec')
-     sub_component_batch_sizes["udlD_emit"] = get_batch_size(df, 30030, group_by_columns=['udlD_emit'], duration_name='udlB_emit')
+     sub_component_batch_sizes["udlB_exec"] = get_batch_size(df, 20021, group_by_columns=['udlB_exec'], col_name='udlB_exec')
+     sub_component_batch_sizes["udlB_emit"] = get_batch_size(df, 30030, group_by_columns=['udlB_emit'], col_name='udlB_emit')
      return sub_component_batch_sizes
      
 
