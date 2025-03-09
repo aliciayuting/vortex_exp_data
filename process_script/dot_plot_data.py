@@ -26,7 +26,7 @@ def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_
      plt.ylim(0, duration_df[plot_column_name].max() * 1.5)
      
      # plt.savefig(save_file_name)
-     # plt.show()
+     plt.show()
 
 
 
@@ -40,7 +40,8 @@ if __name__ == "__main__":
      save_dir = sys.argv[2]
      
      list_of_type = ["e2e", "last_udl", "udlA", "udlB", "udlD", "udlE", "c_udla", "c_udlb", \
-          "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput"]
+          "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput",\
+          "udlB_exec_batch", "udlB_emit_batch"]
      print(f"print_type {list_of_type}")
      print_type = input()
      if print_type not in list_of_type:
@@ -140,6 +141,19 @@ if __name__ == "__main__":
      elif print_type == list_of_type[15]:
           throughput = compute_throughput(df)
           print(f"Throughput: {throughput} Qps")
+          
+     elif print_type == list_of_type[16]:
+          print(f"got print type of : {print_type}")
+          batch_size_df_dict = get_batch_size(df)
+          dot_plot_latencies(batch_size_df_dict['udlB_exec'], 'udlB_exec', 'udlB_exec', \
+                              'Query ID', 'Batch Size', save_file_name)
+     
+     elif print_type == list_of_type[17]:
+          print(f"got print type of : {print_type}")
+          batch_size_df_dict = get_batch_size(df)
+          dot_plot_latencies(batch_size_df_dict['udlB_emit'], 'udlB_emit', 'udlB_emit', \
+                              'Query ID', 'Batch Size', save_file_name)
+          
           
      # elif print_type == "udl2":
      #      duration_df_dict,_ = process_udl2_dataframe(df)

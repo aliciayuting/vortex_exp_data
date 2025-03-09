@@ -61,14 +61,14 @@ def trim_df(df, start_loc, end_loc):
      return df
 
 def clean_log_dataframe(log_data, drop_warmup=30):
-     df = pd.DataFrame(log_data, columns=["tag", "timestamp", "node_id", "querybatch_id","cluster_id", "extra"])
+     df = pd.DataFrame(log_data, columns=["tag", "timestamp", "node_id", "querybatch_id","batch_size", "extra"])
      df = df.drop(columns=['extra'])
      df['tag'] = df['tag'].astype(int)
      df['node_id'] = df['node_id'].astype(int)
      df['timestamp'] = df['timestamp'].astype(int)
      df['timestamp'] = df['timestamp']/1000 # convert to microseconds
      df['querybatch_id'] = df['querybatch_id'].astype(int)
-     df['cluster_id'] = df['cluster_id'].astype(int)
+     df['batch_size'] = df['batch_size'].astype(int)
      df = df[df['node_id'] >= drop_warmup ]
      
      # # drop df with 'querybatch_id' btween MULTIPLIER to MULTIPLIER*drop_warmup
@@ -118,6 +118,19 @@ def get_durations_based_on_nodes(df, start_tag, end_tag, group_by_columns=['node
     different_node_df = pd.DataFrame(different_node_durations)
 #     print(different_node_df)
     return same_node_df, different_node_df
+
+
+def get_batch_size(df, tag, group_by_columns=['node_id'], col_name='batch_size'):
+     filtered_df = df[(df['tag'] == tag)]
+     grouped = filtered_df.groupby(group_by_columns)['batch_size']
+     batch_sizes = []
+     for group_values, batch_size in grouped:
+          result = {group_by_columns[i]: group_values[i] for i in range(len(group_by_columns))} if len(group_by_columns) > 1 else {group_by_columns[0]: group_values}
+          result[col_name] = batch_size.mean()
+          batch_sizes.append(result)
+     batch_size_df = pd.DataFrame(batch_sizes)
+     return batch_size_df
+     
 
 def process_e2e_dataframe(df):
      # print(df)
@@ -170,6 +183,13 @@ def compute_throughput(df):
      total_queries = len(df['node_id'].unique())
      throughput = total_queries / total_time
      return throughput
+
+def get_batch_size(df):
+     sub_component_batch_sizes = {}
+     sub_component_batch_sizes["udlB_exec"] = get_batch_size(df, 20021, group_by_columns=['node_id'], duration_name='udlB_exec')
+     sub_component_batch_sizes["udlD_emit"] = get_batch_size(df, 30030, group_by_columns=['node_id'], duration_name='udlB_emit')
+     return sub_component_batch_sizes
+     
 
 # def process_udl1_dataframe(df):
 #      sub_component_latencies = {}
