@@ -40,7 +40,7 @@ def get_log_files_dataframe(log_files):
           df = pd.read_csv(log_file_path, 
                          delim_whitespace=True, 
                          comment='#', 
-                         names=["tag", "timestamp", "node_id", "querybatch_id", "cluster_id", "extra"],
+                         names=["tag", "timestamp", "node_id", "querybatch_id", "batch_size", "extra"],
                          header=None)
           log_data.append(df)
      combined_df = pd.concat(log_data, ignore_index=True)
