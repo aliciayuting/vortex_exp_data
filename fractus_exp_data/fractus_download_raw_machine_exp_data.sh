@@ -11,8 +11,8 @@ local_directory="$1"
 
 
 # ips=("192.168.9.30" "192.168.9.32" "192.168.9.29" "192.168.9.31" "192.168.9.28")
-node_names=("TY373@d7525-10s10317.wisc.cloudlab.us" "TY373@d7525-10s10323.wisc.cloudlab.us" "TY373@d7525-10s10311.wisc.cloudlab.us" "TY373@d7525-10s10339.wisc.cloudlab.us" "TY373@d7525-10s10317.wisc.cloudlab.us")
-node_ids=("n0" "n1" "n2" "n3" "n4")
+node_names=("compute32" "compute30" "compute28" "compute29")
+node_ids=("n0" "n1" "n2" "n3" )
 # ips=("192.168.9.30" "192.168.9.32" "192.168.9.31")
 # node_names=("compute30" "compute32" "compute31")
 # node_ids=("n0" "n1" "n2")

@@ -7,21 +7,24 @@ from process_data import *
 
 warnings.filterwarnings("ignore")
 
-arguments = sys.argv
-if len(sys.argv) < 2:
-     print("Usage: python print_data_stats.py <data_dir>")
-     exit()
-local_dir = sys.argv[1]
-print("print_type (e2e | udl1 | udl2 |udl3 | all):")
-print_type = input().strip()
+# arguments = sys.argv
+# if len(sys.argv) < 2:
+#      print("Usage: python print_data_stats.py <data_dir>")
+#      exit()
+# local_dir = sys.argv[1]
 
-if print_type not in ["e2e", "udl1", "udl2", "udl3", "all"]:
-     print("Invalid print_type")
-     exit()
-print("drop_warmup number:")
-drop_warmup_num = int(input())
+# print_type_list = ["e2e", "last_udl", "udlA", "udlB", "udlD", "udlE", "c_udla", "c_udlb", \
+#           "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput"]
+# print(f"print_type {print_type_list}:")
+# print_type = input().strip()
 
-pd.set_option('display.max_columns', None)
+# if print_type not in print_type_list:
+#      print("Invalid print_type")
+#      exit()
+# print("drop_warmup number:")
+# drop_warmup_num = int(input())
+
+# pd.set_option('display.max_columns', None)
 
 
 def print_duration_df(duration_df,  column_name='e2e_latency'):
@@ -63,11 +66,10 @@ def print_avgs(duration_df_dict, type_name):
 
 if __name__ == "__main__":
      arguments = sys.argv
-     if len(sys.argv) < 3:
-          print("Usage: python3 dot_plot_data.py <data_dir> <save_dir> ")
+     if len(sys.argv) < 2:
+          print("Usage: python3 dot_plot_data.py <data_dir>")
           exit()
      local_dir = sys.argv[1]
-     save_dir = sys.argv[2]
      
      list_of_type = ["e2e", "last_udl", "udlA", "udlB", "udlD", "udlE", "c_udla", "c_udlb", \
           "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput"]
@@ -80,7 +82,6 @@ if __name__ == "__main__":
      
      
      name =  "dotplot_" + print_type + local_dir.split("/")[-1] + ".pdf"
-     save_file_name = os.path.join(save_dir, name)
 
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
@@ -90,7 +91,7 @@ if __name__ == "__main__":
      if print_type == "e2e":
           
           duration_df = process_e2e_dataframe(df)
-          print_duration_df(duration_df)
+          print_duration_df(duration_df, 'e2e_time')
           
           
      elif print_type == "c_mono":

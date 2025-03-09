@@ -69,7 +69,7 @@ def clean_log_dataframe(log_data, drop_warmup=30):
      df['timestamp'] = df['timestamp']/1000 # convert to microseconds
      df['querybatch_id'] = df['querybatch_id'].astype(int)
      df['cluster_id'] = df['cluster_id'].astype(int)
-     df = df[df['querybatch_id'] >= drop_warmup ]
+     df = df[df['node_id'] >= drop_warmup ]
      
      # # drop df with 'querybatch_id' btween MULTIPLIER to MULTIPLIER*drop_warmup
      # df = df[~((df['tag'].between(40000, 50000)) & (df['querybatch_id'] // MULTIPLIER < drop_warmup))]
@@ -135,7 +135,7 @@ def process_bw_udls_dataframe(df):
      sub_component_latencies['c_udla'] = get_durations(df, 10000, 1000, group_by_columns=['node_id'], duration_name='c_udla')
      sub_component_latencies['c_udlb'] = get_durations(df, 20000, 1000, group_by_columns=['node_id'], duration_name='c_udlb')
      sub_component_latencies['udla_d'] = get_durations(df, 30000, 10100, group_by_columns=['node_id'], duration_name='udla_d')
-     sub_component_latencies['udlb_d'] = get_durations(df, 30010, 20100, group_by_columns=['node_id'], duration_name='udlb_d')
+     sub_component_latencies['udlb_d'] = get_durations(df, 30010, 20031, group_by_columns=['node_id'], duration_name='udlb_d')
      sub_component_latencies['udld_e'] = get_durations(df, 40000, 30100, group_by_columns=['node_id'], duration_name='udld_e')
      return sub_component_latencies
 
@@ -148,7 +148,7 @@ def process_c_mono_dataframe(df):
 def process_udls_dataframe(df):
      sub_component_latencies = {}
      sub_component_latencies['udlA'] = get_durations(df, 10031, 10030, group_by_columns=['node_id'], duration_name='udlA')
-     sub_component_latencies['udlB'] = get_durations(df, 20041, 20031, group_by_columns=['node_id'], duration_name='udlB')
+     sub_component_latencies['udlB'] = get_durations(df, 20041, 20021, group_by_columns=['node_id'], duration_name='udlB')
      sub_component_latencies['udlD'] = get_durations(df, 30031, 30030, group_by_columns=['node_id'], duration_name='udlD')
      sub_component_latencies['udlE'] = get_durations(df, 40031, 40030, group_by_columns=['node_id'], duration_name='udlE')
      return sub_component_latencies
