@@ -25,8 +25,8 @@ def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_
      plt.grid()
      plt.ylim(0, duration_df[plot_column_name].max() * 1.5)
      
-     plt.savefig(save_file_name)
-     plt.show()
+     # plt.savefig(save_file_name)
+     # plt.show()
 
 
 
