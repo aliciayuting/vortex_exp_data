@@ -120,7 +120,7 @@ def get_durations_based_on_nodes(df, start_tag, end_tag, group_by_columns=['node
     return same_node_df, different_node_df
 
 
-def get_batch_size(df, tag, group_by_columns=['node_id'], col_name='batch_size'):
+def get_batch_size_df(df, tag, group_by_columns=['node_id'], col_name='batch_size'):
      filtered_df = df[(df['tag'] == tag)]
      grouped = filtered_df.groupby(group_by_columns)['batch_size']
      batch_sizes = []
@@ -186,8 +186,8 @@ def compute_throughput(df):
 
 def get_batch_size(df):
      sub_component_batch_sizes = {}
-     sub_component_batch_sizes["udlB_exec"] = get_batch_size(df, 20021, group_by_columns=['udlB_exec'], col_name='udlB_exec')
-     sub_component_batch_sizes["udlB_emit"] = get_batch_size(df, 30030, group_by_columns=['udlB_emit'], col_name='udlB_emit')
+     sub_component_batch_sizes["udlB_exec"] = get_batch_size_df(df, 20021, group_by_columns=['udlB_exec'], col_name='udlB_exec')
+     sub_component_batch_sizes["udlB_emit"] = get_batch_size_df(df, 30030, group_by_columns=['udlB_emit'], col_name='udlB_emit')
      return sub_component_batch_sizes
      
 

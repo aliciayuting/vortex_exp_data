@@ -56,7 +56,7 @@ if __name__ == "__main__":
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
-     df = clean_log_dataframe(log_data, drop_warmup=50)
+     df = clean_log_dataframe(log_data, drop_warmup=100)
      
      if print_type == "e2e":
           
