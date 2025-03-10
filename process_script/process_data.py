@@ -120,12 +120,13 @@ def get_durations_based_on_nodes(df, start_tag, end_tag, group_by_columns=['node
     return same_node_df, different_node_df
 
 
-def get_batch_size_df(df, tag, group_by_columns=['node_id'], col_name='batch_size'):
+def get_batch_size_df(df, tag, group_by_columns='node_id', col_name='batch_size'):
      filtered_df = df[(df['tag'] == tag)]
      grouped = filtered_df.groupby(group_by_columns)['batch_size']
      batch_sizes = []
      for group_values, batch_size in grouped:
-          result = {group_by_columns[i]: group_values[i] for i in range(len(group_by_columns))} if len(group_by_columns) > 1 else {group_by_columns[0]: group_values}
+          result = {group_by_columns[i]: group_values[i] for i in range(len(group_by_columns))} if len(group_by_columns) > 1 else {group_by_columns[0]: group_values[0]}
+          
           result[col_name] = batch_size.mean()
           batch_sizes.append(result)
      batch_size_df = pd.DataFrame(batch_sizes)
@@ -135,7 +136,7 @@ def get_batch_size_df(df, tag, group_by_columns=['node_id'], col_name='batch_siz
 def process_e2e_dataframe(df):
      # print(df)
      sub_component_latencies = {}
-     sub_component_latencies['e2e_time'] = get_durations(df, 40031, 1000, group_by_columns=['node_id'], duration_name='e2e_time')
+     sub_component_latencies['e2e_time'] = get_durations(df, 40100, 1000, group_by_columns=['node_id'], duration_name='e2e_time')
      return sub_component_latencies
 
 def process_last_udl_dataframe(df):
@@ -186,8 +187,8 @@ def compute_throughput(df):
 
 def get_batch_size(df):
      sub_component_batch_sizes = {}
-     sub_component_batch_sizes["udlB_exec"] = get_batch_size_df(df, 20021, group_by_columns=['udlB_exec'], col_name='udlB_exec')
-     sub_component_batch_sizes["udlB_emit"] = get_batch_size_df(df, 30030, group_by_columns=['udlB_emit'], col_name='udlB_emit')
+     sub_component_batch_sizes["udlB_exec_batch"] = get_batch_size_df(df, 20021, group_by_columns=['node_id'], col_name='udlB_exec_batch')
+     sub_component_batch_sizes["udlB_emit_batch"] = get_batch_size_df(df, 20030, group_by_columns=['node_id'], col_name='udlB_emit_batch')
      return sub_component_batch_sizes
      
 

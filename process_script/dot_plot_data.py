@@ -56,7 +56,7 @@ if __name__ == "__main__":
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
-     df = clean_log_dataframe(log_data, drop_warmup=100)
+     df = clean_log_dataframe(log_data, drop_warmup=50)
      
      if print_type == "e2e":
           
@@ -145,13 +145,14 @@ if __name__ == "__main__":
      elif print_type == list_of_type[16]:
           print(f"got print type of : {print_type}")
           batch_size_df_dict = get_batch_size(df)
-          dot_plot_latencies(batch_size_df_dict['udlB_exec'], 'udlB_exec', 'udlB_exec', \
+          print(batch_size_df_dict['udlB_exec_batch'])
+          dot_plot_latencies(batch_size_df_dict['udlB_exec_batch'], 'udlB_exec_batch', 'udlB_exec_batch', \
                               'Query ID', 'Batch Size', save_file_name)
      
      elif print_type == list_of_type[17]:
           print(f"got print type of : {print_type}")
           batch_size_df_dict = get_batch_size(df)
-          dot_plot_latencies(batch_size_df_dict['udlB_emit'], 'udlB_emit', 'udlB_emit', \
+          dot_plot_latencies(batch_size_df_dict['udlB_emit_batch'], 'udlB_emit_batch', 'udlB_emit_batch', \
                               'Query ID', 'Batch Size', save_file_name)
           
           

@@ -83,7 +83,8 @@
                         "local_projection_path":"/mnt/nvme0/vortex_pipeline1/models/models_step_A_query_text_linear.pt",
                         "max_exe_batch_size":16,
                         "batch_time_us":100,
-                        "max_emit_batch_size":8
+                        "max_emit_batch_size":8,
+                        "stepa_next_udl_shards":[2]
                     }],
                 "destinations": [{"/stepD":"put"}]
             },
@@ -101,7 +102,8 @@
                         "local_projection_path":"/mnt/nvme0/vortex_pipeline1/models/models_step_B_vision_projection.pt",
                         "max_exe_batch_size":10,
                         "batch_time_us":100,
-                        "max_emit_batch_size":4
+                        "max_emit_batch_size":4,
+                        "stepb_next_udl_shards":[2]
                     }],
                 "destinations": [{"/stepD":"put"}]
             },
@@ -120,7 +122,8 @@
                         "local_tf_mapping_output_path":"/mnt/nvme0/vortex_pipeline1/models/models_step_D_transformer_mapping_output.pt",
                         "max_exe_batch_size":32,
                         "batch_time_us":100,
-                        "max_emit_batch_size":16
+                        "max_emit_batch_size":16,
+                        "stepd_next_udl_shards":[2]
                     }],
                 "destinations": [{"/stepE":"put"}]
             },
@@ -136,7 +139,7 @@
                         "index_root_path":"/mnt/nvme0/vortex_pipeline1/index/",
                         "index_experiment_name":"EVQA_train_split/",
                         "index_name":"EVQA_PreFLMR_ViT-L",
-                        "max_exe_batch_size":128,
+                        "max_exe_batch_size":64,
                         "batch_time_us":100,
                         "flush_qid":166999
                     }],
@@ -162,7 +165,7 @@
                         "index_experiment_name":"EVQA_train_split",
                         "checkpoint_path":"LinWeizheDragon/PreFLMR_ViT-L",
                         "image_processor_name":"openai/clip-vit-large-patch14",
-                        "max_exe_batch_size":16,
+                        "max_exe_batch_size":1,
                         "batch_time_us":100,
                         "flush_qid":166999
                     }],
