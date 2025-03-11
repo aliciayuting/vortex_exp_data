@@ -10,11 +10,16 @@ fi
 local_directory="$1"
 
 
-node_names=("TY373@d7525-10s10327.wisc.cloudlab.us"\
-            "TY373@d7525-10s10309.wisc.cloudlab.us" \
-            "TY373@d7525-10s10339.wisc.cloudlab.us" \
-            "TY373@d7525-10s10315.wisc.cloudlab.us")
-node_ids=("n0" "n1" "n2" "n3" )
+node_names=("TY373@d7525-10s10311.wisc.cloudlab.us" \
+            "TY373@d7525-10s10325.wisc.cloudlab.us" \
+            "TY373@d7525-10s10321.wisc.cloudlab.us" \
+            "TY373@d7525-10s10331.wisc.cloudlab.us"\
+            "TY373@d7525-10s10331.wisc.cloudlab.us"\
+            "TY373@d7525-10s10331.wisc.cloudlab.us"\
+            "TY373@d7525-10s10331.wisc.cloudlab.us"\
+            "TY373@d7525-10s10319.wisc.cloudlab.us")
+
+node_ids=("n0" "n1" "n2" "n3" "n4" "n5" "n6" "n7")
 # ips=("192.168.9.30" "192.168.9.32" "192.168.9.31")
 # node_names=("compute30" "compute32" "compute31")
 # node_ids=("n0" "n1" "n2")
@@ -49,13 +54,13 @@ last_remote_node_name=${node_names[${#node_names[@]}-1]}
 
 read -p "Is this a mono client? [y/N]: " is_mono
 if [[ "$is_mono" =~ ^[Yy] ]]; then
-    remote_mono_client="\$HOME/workspace/vortex/build-Release/cfg/${last_node_id}/monoClient.py"
+    remote_mono_client="~/workspace/vortex_udlppl1/build-Release/cfg/${last_node_id}/pipeline_client/monoClient.py"
     scp "${last_remote_node_name}:${remote_mono_client}" "${local_directory}/"
 else
-    remote_perf_client="\$HOME/workspace/vortex/build-Release/cfg/${last_node_id}/stepABclient.py"
+    remote_perf_client="~/workspace/vortex_udlppl1/build-Release/cfg/${last_node_id}/pipeline_client/stepABclient.py"
     scp "${last_remote_node_name}:${remote_perf_client}" "${local_directory}/"
 fi
 
 # Copy server config to local file
-remote_layout_dir="~/workspace/vortex/build-Release/cfg/layout.json.tmp"
+remote_layout_dir="~/workspace/vortex_udlppl1/build-Release/cfg/layout.json.tmp"
 scp "${node_names[0]}:${remote_layout_dir}" "${local_directory}/"

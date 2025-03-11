@@ -28,6 +28,7 @@ def get_log_files(local_dir, suffix):
      log_files = []
      for root, dirs, files in os.walk(local_dir):
           for file in files:
+               if file == ""
                if file[-4:] == suffix:
                     file_path = os.path.join(root, file)
                     log_files.append(file_path)
