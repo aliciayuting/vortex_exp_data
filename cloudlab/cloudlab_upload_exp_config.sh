@@ -8,6 +8,7 @@ local_cfg_directory="./cfg"
 derecho_cfg_file_name="derecho.cfg"
 env_file_name="set_nv_env.sh"
 dfgs_file="dfgs.json.tmp"
+gpu_monitor_file="gpu_monitor.sh"
 dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
 
 ips=("10.10.1.1"\
@@ -67,6 +68,9 @@ for ((i=0; i<${#ips[@]}; i++)); do
 
      env_file_path="${local_cfg_directory}/${node_id}/${env_file_name}"
      scp "${env_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
+
+     gpu_monitor_file_path="${local_cfg_directory}/${gpu_monitor_file}"
+     scp "${gpu_monitor_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
 
      layot_file_path="${local_cfg_directory}/layout.json"
      scp "${layot_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
