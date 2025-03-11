@@ -28,6 +28,9 @@ node_names=("TY373@d7525-10s10311.wisc.cloudlab.us" \
             "TY373@d7525-10s10325.wisc.cloudlab.us" \
             "TY373@d7525-10s10339.wisc.cloudlab.us" \
             "TY373@d7525-10s10331.wisc.cloudlab.us"\
+            "TY373@d7525-10s10331.wisc.cloudlab.us"\
+            "TY373@d7525-10s10331.wisc.cloudlab.us"\
+            "TY373@d7525-10s10331.wisc.cloudlab.us"\
             "TY373@d7525-10s10319.wisc.cloudlab.us")
           #   "Alicia@d7525-10s10339.wisc.cloudlab.us"\
           #   "Alicia@d7525-10s10315.wisc.cloudlab.us"\
