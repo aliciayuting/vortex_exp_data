@@ -6,6 +6,7 @@
 # 1.1. Write to local directory
 local_cfg_directory="./cfg"
 derecho_cfg_file_name="derecho.cfg"
+env_file_name="set_nv_env.sh"
 dfgs_file="dfgs.json.tmp"
 dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
 
@@ -13,6 +14,9 @@ ips=("10.10.1.1"\
     "10.10.1.2"\
     "10.10.1.3" \
     "10.10.1.4"\
+    "10.10.1.4"\
+    "10.10.1.4"\
+    "10.10.1.4" \
     "10.10.1.5")
 #     "10.10.1.4"\
 #     "10.10.1.5"\
@@ -57,6 +61,10 @@ for ((i=0; i<${#ips[@]}; i++)); do
      node_id="${node_ids[i]}"
      cfg_file_path="${local_cfg_directory}/${node_id}/${derecho_cfg_file_name}"
      scp "${cfg_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/" 
+
+     env_file_path="${local_cfg_directory}/${node_id}/${env_file_name}"
+     scp "${env_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
+
      layot_file_path="${local_cfg_directory}/layout.json"
      scp "${layot_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
      dfgs_file_path="${local_cfg_directory}/${dfgs_file}"

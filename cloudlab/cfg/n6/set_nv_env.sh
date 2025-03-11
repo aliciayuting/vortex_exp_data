@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Set the CUDA_VISIBLE_DEVICES variable
+export CUDA_VISIBLE_DEVICES=0
+
+# Print the value of CUDA_VISIBLE_DEVICES
+echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
