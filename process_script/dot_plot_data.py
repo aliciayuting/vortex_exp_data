@@ -41,7 +41,7 @@ if __name__ == "__main__":
      
      list_of_type = ["e2e", "last_udl", "udlA", "udlB", "udlD", "udlE", "c_udla", "c_udlb", \
           "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput",\
-          "udlB_exec_batch", "udlB_emit_batch"]
+          "udlB_exec_batch", "udlB_emit_batch","udlD_emit_batch", "udlE_exec_batch"]
      print(f"print_type {list_of_type}")
      print_type = input()
      if print_type not in list_of_type:
@@ -56,7 +56,7 @@ if __name__ == "__main__":
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
-     df = clean_log_dataframe(log_data, drop_warmup=50)
+     df = clean_log_dataframe(log_data, drop_warmup=200)
      
      if print_type == "e2e":
           
@@ -155,7 +155,17 @@ if __name__ == "__main__":
           dot_plot_latencies(batch_size_df_dict['udlB_emit_batch'], 'udlB_emit_batch', 'udlB_emit_batch', \
                               'Query ID', 'Batch Size', save_file_name)
           
+     elif print_type == list_of_type[18]:
+          print(f"got print type of : {print_type}")
+          batch_size_df_dict = get_batch_size(df)
+          dot_plot_latencies(batch_size_df_dict['udlD_emit_batch'], 'udlD_emit_batch', 'udlD_emit_batch', \
+                              'Query ID', 'Batch Size', save_file_name)
           
+     elif print_type == list_of_type[19]:
+          print(f"got print type of : {print_type}")
+          batch_size_df_dict = get_batch_size(df)
+          dot_plot_latencies(batch_size_df_dict['udlE_exec_batch'], 'udlE_exec_batch', 'udlE_exec_batch', \
+                              'Query ID', 'Batch Size', save_file_name)
      # elif print_type == "udl2":
      #      duration_df_dict,_ = process_udl2_dataframe(df)
      #      dot_plot_latencies(duration_df_dict['udl2_time'], 'udl2_time', 'UDL2 Cluster Search Latency(us)', \

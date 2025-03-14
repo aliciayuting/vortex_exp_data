@@ -1,1 +1,3 @@
-echo "nothing set"
+export CUDA_VISIBLE_DEVICES=MIG-6aada417-88b5-539e-a1eb-b5dd26d2383f
+
+echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"

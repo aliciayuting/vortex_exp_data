@@ -13,13 +13,12 @@ ab_client_py="stepABclient.py"
 dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
 
 ips=("10.10.1.1"\
-    "10.10.1.2"\
-    "10.10.1.6" \
-    "10.10.1.4"\
-    "10.10.1.4"\
-    "10.10.1.4"\
-    "10.10.1.4" \
-    "10.10.1.5")
+     "10.10.1.2"\
+     "10.10.1.6" \
+     "10.10.1.6" \
+     "10.10.1.4"\
+     "10.10.1.4"\
+     "10.10.1.5")
 #     "10.10.1.4"\
 #     "10.10.1.5"\
 #     "10.10.1.6"\
@@ -29,8 +28,7 @@ ips=("10.10.1.1"\
 node_names=("TY373@d7525-10s10311.wisc.cloudlab.us" \
             "TY373@d7525-10s10325.wisc.cloudlab.us" \
             "TY373@d7525-10s10321.wisc.cloudlab.us" \
-            "TY373@d7525-10s10331.wisc.cloudlab.us"\
-            "TY373@d7525-10s10331.wisc.cloudlab.us"\
+            "TY373@d7525-10s10321.wisc.cloudlab.us" \
             "TY373@d7525-10s10331.wisc.cloudlab.us"\
             "TY373@d7525-10s10331.wisc.cloudlab.us"\
             "TY373@d7525-10s10319.wisc.cloudlab.us")
@@ -40,7 +38,7 @@ node_names=("TY373@d7525-10s10311.wisc.cloudlab.us" \
           #   "Alicia@d7525-10s10333.wisc.cloudlab.us"\
           #   "Alicia@d7525-10s10329.wisc.cloudlab.us"\
           #   "Alicia@d7525-10s10317.wisc.cloudlab.us")
-node_ids=("n0" "n1" "n2" "n3" "n4" "n5" "n6" "n7")
+node_ids=("n0" "n1" "n2" "n3" "n4" "n5" "n6")
 #  "n3" "n4" "n5" "n6" "n7" "n8")
 
 line_numbers=(3 9)
@@ -73,12 +71,12 @@ for ((i=0; i<${#ips[@]}; i++)); do
      gpu_monitor_file_path="${local_cfg_directory}/${gpu_monitor_file}"
      scp "${gpu_monitor_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
 
-     
-
      layot_file_path="${local_cfg_directory}/layout.json"
      scp "${layot_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
+
      dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
      scp "${dfgs_file_path}" "${node_name}:${remote_cfg_directory}/"
+     sleep 1
 done
 
 last_node_id=${node_ids[${#node_ids[@]}-1]}

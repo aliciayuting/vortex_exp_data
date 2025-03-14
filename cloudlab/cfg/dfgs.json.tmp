@@ -81,9 +81,9 @@
                         "checkpoint_path":"LinWeizheDragon/PreFLMR_ViT-L",
                         "local_encoder_path":"/mydata/EVQA/models/models_step_A_query_text_encoder.pt",
                         "local_projection_path":"/mydata/EVQA/models/models_step_A_query_text_linear.pt",
-                        "max_exe_batch_size":16,
-                        "batch_time_us":100,
-                        "max_emit_batch_size":8,
+                        "max_exe_batch_size":6,
+                        "batch_time_us":1000,
+                        "max_emit_batch_size":6,
                         "stepa_next_udl_shards":[3]
                     }],
                 "destinations": [{"/stepD":"put"}]
@@ -100,8 +100,8 @@
                         "checkpoint_path":"LinWeizheDragon/PreFLMR_ViT-L",
                         "local_encoder_path":"/mydata/EVQA/models/models_step_B_vision_encoder.pt",
                         "local_projection_path":"/mydata/EVQA/models/models_step_B_vision_projection.pt",
-                        "max_exe_batch_size":10,
-                        "batch_time_us":100,
+                        "max_exe_batch_size":16,
+                        "batch_time_us":10000,
                         "max_emit_batch_size":4,
                         "stepb_next_udl_shards":[3]
                     }],
@@ -121,9 +121,9 @@
                         "local_tf_mapping_path":"/mydata/EVQA/models/models_step_D_transformer_mapping.pt",
                         "local_tf_mapping_output_path":"/mydata/EVQA/models/models_step_D_transformer_mapping_output.pt",
                         "max_exe_batch_size":32,
-                        "batch_time_us":100,
+                        "batch_time_us":1000,
                         "max_emit_batch_size":16,
-                        "stepd_next_udl_shards":[4,5,6]
+                        "stepd_next_udl_shards":[2,4,5]
                     }],
                 "destinations": [{"/stepE":"put"}]
             },
@@ -139,8 +139,8 @@
                         "index_root_path":"/mydata/EVQA/index/",
                         "index_experiment_name":"EVQA_train_split/",
                         "index_name":"EVQA_PreFLMR_ViT-L",
-                        "max_exe_batch_size":64,
-                        "batch_time_us":100,
+                        "max_exe_batch_size":32,
+                        "batch_time_us":1000,
                         "flush_qid":166999
                     }],
                 "destinations": [{}]

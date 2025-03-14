@@ -28,7 +28,8 @@ def get_log_files(local_dir, suffix):
      log_files = []
      for root, dirs, files in os.walk(local_dir):
           for file in files:
-               if file == ""
+               if file == "memgpu_log.dat" or file == "dcgm_log.dat":
+                    continue
                if file[-4:] == suffix:
                     file_path = os.path.join(root, file)
                     log_files.append(file_path)
@@ -137,7 +138,7 @@ def get_batch_size_df(df, tag, group_by_columns='node_id', col_name='batch_size'
 def process_e2e_dataframe(df):
      # print(df)
      sub_component_latencies = {}
-     sub_component_latencies['e2e_time'] = get_durations(df, 40100, 1000, group_by_columns=['node_id'], duration_name='e2e_time')
+     sub_component_latencies['e2e_time'] = get_durations(df, 40031, 1000, group_by_columns=['node_id'], duration_name='e2e_time')
      return sub_component_latencies
 
 def process_last_udl_dataframe(df):
@@ -162,10 +163,10 @@ def process_c_mono_dataframe(df):
 
 def process_udls_dataframe(df):
      sub_component_latencies = {}
-     sub_component_latencies['udlA'] = get_durations(df, 10031, 10030, group_by_columns=['node_id'], duration_name='udlA')
-     sub_component_latencies['udlB'] = get_durations(df, 20041, 20021, group_by_columns=['node_id'], duration_name='udlB')
-     sub_component_latencies['udlD'] = get_durations(df, 30031, 30030, group_by_columns=['node_id'], duration_name='udlD')
-     sub_component_latencies['udlE'] = get_durations(df, 40031, 40030, group_by_columns=['node_id'], duration_name='udlE')
+     sub_component_latencies['udlA'] = get_durations(df, 10100, 10000, group_by_columns=['node_id'], duration_name='udlA')
+     sub_component_latencies['udlB'] = get_durations(df, 20031, 20000, group_by_columns=['node_id'], duration_name='udlB')
+     sub_component_latencies['udlD'] = get_durations(df, 30100, 30011, group_by_columns=['node_id'], duration_name='udlD')
+     sub_component_latencies['udlE'] = get_durations(df, 40030, 40000, group_by_columns=['node_id'], duration_name='udlE')
      return sub_component_latencies
 
 def process_udlD_dataframe(df):
@@ -190,6 +191,8 @@ def get_batch_size(df):
      sub_component_batch_sizes = {}
      sub_component_batch_sizes["udlB_exec_batch"] = get_batch_size_df(df, 20021, group_by_columns=['node_id'], col_name='udlB_exec_batch')
      sub_component_batch_sizes["udlB_emit_batch"] = get_batch_size_df(df, 20030, group_by_columns=['node_id'], col_name='udlB_emit_batch')
+     sub_component_batch_sizes["udlD_emit_batch"] = get_batch_size_df(df, 30100, group_by_columns=['node_id'], col_name='udlD_emit_batch')
+     sub_component_batch_sizes["udlE_exec_batch"] = get_batch_size_df(df, 40030, group_by_columns=['node_id'], col_name='udlE_exec_batch')
      return sub_component_batch_sizes
      
 

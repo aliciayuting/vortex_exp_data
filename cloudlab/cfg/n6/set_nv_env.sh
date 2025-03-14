@@ -1,7 +1,1 @@
-#!/bin/bash
-
-# Set the CUDA_VISIBLE_DEVICES variable
-export CUDA_VISIBLE_DEVICES=MIG-92696607-f666-5b30-b4dd-2a2a154b33c3
-
-# Print the value of CUDA_VISIBLE_DEVICES
-echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+echo "nothing set"

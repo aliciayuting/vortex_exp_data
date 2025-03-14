@@ -23,7 +23,7 @@ from torch.utils.data import DataLoader
 image_root_dir = "/mydata/EVQA/"
 ds_dir = "/mydata/EVQA/EVQA_data/"
 STEPA_SHARD_INDICES = [3]
-STEPB_SHARD_INDICES = [0,1,2]
+STEPB_SHARD_INDICES = [0,1]
 STEPA_SUBGROUP_INDEX = 0
 STEPB_SUBGROUP_INDEX = 0
 
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     stepb_prefix = "/stepB/"
     subgroup_type = "VolatileCascadeStoreWithStringKey"
     
-    BS = 1
+    BS = 2
     num_batches = 1000
     
     # directories and str configs
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     ds = load_dataset('parquet', data_files ={  
                                             'train' : ds_dir + 'train-00000-of-00001.parquet',
                                             'test'  : ds_dir + 'test-00000-of-00001-2.parquet',
-                                            })[use_split].select(i for i in range(166000, 167000, 1)) 
+                                            })[use_split].select(i for i in range(165000, 167000, 1)) 
     # preprocess datasets so that we have 
     ds = ds.map(add_path_prefix_in_img_path, fn_kwargs={"prefix": image_root_dir})
     ds = ds.map(prepare_inputs)
@@ -192,6 +192,7 @@ if __name__ == "__main__":
     #         break
         
     for batch_idx, batch in enumerate(loader):
+        
         if batch_idx >= num_batches:
             break
   
@@ -228,18 +229,13 @@ if __name__ == "__main__":
             uds_idx =  int(qid.find("_"))
             question_id = int(qid[uds_idx+1:])
             # stepa_serializer.question_ids.append(question_id)
-            tl.log(10001, question_id, 0, 0)
+            tl.log(10001, question_id, stepa_next_shard_idx, stepb_next_shard_idx)
         resB = capi.put_nparray(stepb_key, serialized_np,subgroup_type=subgroup_type,
                     subgroup_index=STEPB_SUBGROUP_INDEX,shard_index=stepb_next_shard_idx, message_id=1, as_trigger=True, blokcing=False)
         
-        for qid in batch["question_id"]:
-            uds_idx =  int(qid.find("_"))
-            question_id = int(qid[uds_idx+1:])
-            # stepa_serializer.question_ids.append(question_id)
-            tl.log(10020, question_id, 0, 0)
         
         
-        time.sleep(0.0002)
+        time.sleep(0.01)
         
     tl.flush("client_timestamp.dat")
         # time.sleep(1000)
