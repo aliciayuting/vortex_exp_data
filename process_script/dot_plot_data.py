@@ -16,8 +16,9 @@ def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_
      # plt.plot(duration_df[plot_column_name], 'o')
      plt.plot(duration_df['node_id'], duration_df[plot_column_name], 'o')
      # print(duration_df['node_id'])
-     print(np.median(np.array(duration_df[plot_column_name])))
-
+     print(f"mean:{np.mean(np.array(duration_df[plot_column_name]))/1000.0} ms")
+     print(f"median:{np.median(np.array(duration_df[plot_column_name]))/1000.0} ms")
+     print(f"95 percentile: {np.percentile(np.array(duration_df[plot_column_name]), 95)/1000.0} ms")
      plt.title(title)
      plt.xlabel(xaxis)
      plt.ylabel(yaxis)
@@ -41,7 +42,8 @@ if __name__ == "__main__":
      
      list_of_type = ["e2e", "last_udl", "udlA", "udlB", "udlD", "udlE", "c_udla", "c_udlb", \
           "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput",\
-          "udlB_exec_batch", "udlB_emit_batch","udlD_emit_batch", "udlE_exec_batch"]
+          "udlB_exec_batch", "udlB_emit_batch","udlD_emit_batch", "udlE_exec_batch", "udlD_exec_batch",\
+          "UDLA_TP", "UDLB_TP", "UDLD_TP", "UDLE_TP", "C_A_TP", "C_B_TP", "A_D_TP", "B_D_TP", "D_E_TP"]
      print(f"print_type {list_of_type}")
      print_type = input()
      if print_type not in list_of_type:
@@ -56,8 +58,7 @@ if __name__ == "__main__":
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
-     df = clean_log_dataframe(log_data, drop_warmup=200)
-     
+     df = clean_log_dataframe(log_data, start_id=50, end_id=2999)
      if print_type == "e2e":
           
           duration_df = process_e2e_dataframe(df)
@@ -166,6 +167,50 @@ if __name__ == "__main__":
           batch_size_df_dict = get_batch_size(df)
           dot_plot_latencies(batch_size_df_dict['udlE_exec_batch'], 'udlE_exec_batch', 'udlE_exec_batch', \
                               'Query ID', 'Batch Size', save_file_name)
+          
+     elif print_type == list_of_type[20]:
+          print(f"got print type of : {print_type}")
+          batch_size_df_dict = get_batch_size(df)
+          dot_plot_latencies(batch_size_df_dict['udlD_exec_batch'], 'udlD_exec_batch', 'udlD_exec_batch', \
+                              'Query ID', 'Batch Size', save_file_name)
+          
+     elif print_type == list_of_type[21]:
+          throughput = compute_udl_throughput(df,start_tag=10000, end_tag=10100)
+          print(f"UDLA Throughput: {throughput} Qps")
+          
+     elif print_type == list_of_type[22]:
+          throughput = compute_udl_throughput(df,start_tag=20000, end_tag=20031)
+          print(f"UDLB Throughput: {throughput} Qps")
+          
+          
+     elif print_type == list_of_type[23]:
+          throughput = compute_udl_throughput(df,start_tag=30000, end_tag=30100)
+          print(f"UDLD Throughput: {throughput} Qps")
+          
+          
+     elif print_type == list_of_type[24]:
+          throughput = compute_udl_throughput(df,start_tag=40000, end_tag=40031)
+          print(f"UDLE Throughput: {throughput} Qps")
+          
+     elif print_type == list_of_type[25]:
+          throughput = compute_udl_throughput(df,start_tag=1000, end_tag=10000)
+          print(f"C_A Throughput: {throughput} Qps")
+          
+     elif print_type == list_of_type[26]:
+          throughput = compute_udl_throughput(df,start_tag=1000, end_tag=20000)
+          print(f"C_B Throughput: {throughput} Qps")
+          
+     elif print_type == list_of_type[27]:
+          throughput = compute_udl_throughput(df,start_tag=10100, end_tag=30000)
+          print(f"A_D Throughput: {throughput} Qps")
+          
+     elif print_type == list_of_type[28]:
+          throughput = compute_udl_throughput(df,start_tag=20031, end_tag=30010)
+          print(f"B_D Throughput: {throughput} Qps")
+          
+     elif print_type == list_of_type[29]:
+          throughput = compute_udl_throughput(df,start_tag=30100, end_tag=40000)
+          print(f"D_E Throughput: {throughput} Qps")
      # elif print_type == "udl2":
      #      duration_df_dict,_ = process_udl2_dataframe(df)
      #      dot_plot_latencies(duration_df_dict['udl2_time'], 'udl2_time', 'UDL2 Cluster Search Latency(us)', \

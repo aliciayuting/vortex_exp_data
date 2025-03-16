@@ -28,7 +28,7 @@ def get_log_files(local_dir, suffix):
      log_files = []
      for root, dirs, files in os.walk(local_dir):
           for file in files:
-               if file == "memgpu_log.dat" or file == "dcgm_log.dat":
+               if file == "gpu_util.dat" or file == "dcgm_log.dat":
                     continue
                if file[-4:] == suffix:
                     file_path = os.path.join(root, file)
@@ -62,7 +62,7 @@ def trim_df(df, start_loc, end_loc):
      df = df.iloc[start_loc:end_loc]
      return df
 
-def clean_log_dataframe(log_data, drop_warmup=30):
+def clean_log_dataframe(log_data, start_id = 164000, end_id=166900):
      df = pd.DataFrame(log_data, columns=["tag", "timestamp", "node_id", "querybatch_id","batch_size", "extra"])
      df = df.drop(columns=['extra'])
      df['tag'] = df['tag'].astype(int)
@@ -71,8 +71,9 @@ def clean_log_dataframe(log_data, drop_warmup=30):
      df['timestamp'] = df['timestamp']/1000 # convert to microseconds
      df['querybatch_id'] = df['querybatch_id'].astype(int)
      df['batch_size'] = df['batch_size'].astype(int)
-     df = df[df['node_id'] >= drop_warmup ]
-     
+     df = df[ df['node_id'] >= start_id ]
+     df = df[ df['node_id'] <= end_id ]
+     print(f"unique node_id count = {df['node_id'].nunique()}")
      # # drop df with 'querybatch_id' btween MULTIPLIER to MULTIPLIER*drop_warmup
      # df = df[~((df['tag'].between(40000, 50000)) & (df['querybatch_id'] // MULTIPLIER < drop_warmup))]
      # df[df['querybatch_id'] == 250 ].to_csv('querybatch_250.csv', index=False)
@@ -138,7 +139,8 @@ def get_batch_size_df(df, tag, group_by_columns='node_id', col_name='batch_size'
 def process_e2e_dataframe(df):
      # print(df)
      sub_component_latencies = {}
-     sub_component_latencies['e2e_time'] = get_durations(df, 40031, 1000, group_by_columns=['node_id'], duration_name='e2e_time')
+     # sub_component_latencies['e2e_time'] = get_durations(df, 40031, 1000, group_by_columns=['node_id'], duration_name='e2e_time')
+     sub_component_latencies['e2e_time'] = get_durations(df, 40100, 1000, group_by_columns=['node_id'], duration_name='e2e_time')
      return sub_component_latencies
 
 def process_last_udl_dataframe(df):
@@ -150,8 +152,8 @@ def process_bw_udls_dataframe(df):
      sub_component_latencies = {}
      sub_component_latencies['c_udla'] = get_durations(df, 10000, 1000, group_by_columns=['node_id'], duration_name='c_udla')
      sub_component_latencies['c_udlb'] = get_durations(df, 20000, 1000, group_by_columns=['node_id'], duration_name='c_udlb')
-     sub_component_latencies['udla_d'] = get_durations(df, 30000, 10100, group_by_columns=['node_id'], duration_name='udla_d')
-     sub_component_latencies['udlb_d'] = get_durations(df, 30010, 20031, group_by_columns=['node_id'], duration_name='udlb_d')
+     sub_component_latencies['udla_d'] = get_durations(df, 30011, 10100, group_by_columns=['node_id'], duration_name='udla_d')
+     sub_component_latencies['udlb_d'] = get_durations(df, 30011, 20031, group_by_columns=['node_id'], duration_name='udlb_d')
      sub_component_latencies['udld_e'] = get_durations(df, 40000, 30100, group_by_columns=['node_id'], duration_name='udld_e')
      return sub_component_latencies
 
@@ -163,22 +165,39 @@ def process_c_mono_dataframe(df):
 
 def process_udls_dataframe(df):
      sub_component_latencies = {}
-     sub_component_latencies['udlA'] = get_durations(df, 10100, 10000, group_by_columns=['node_id'], duration_name='udlA')
-     sub_component_latencies['udlB'] = get_durations(df, 20031, 20000, group_by_columns=['node_id'], duration_name='udlB')
-     sub_component_latencies['udlD'] = get_durations(df, 30100, 30011, group_by_columns=['node_id'], duration_name='udlD')
-     sub_component_latencies['udlE'] = get_durations(df, 40030, 40000, group_by_columns=['node_id'], duration_name='udlE')
+     # sub_component_latencies['udlA'] = get_durations(df, 10100, 10000, group_by_columns=['node_id'], duration_name='udlA')
+     # sub_component_latencies['udlB'] = get_durations(df, 20031, 20000, group_by_columns=['node_id'], duration_name='udlB')
+     # sub_component_latencies['udlD'] = get_durations(df, 30100, 30011, group_by_columns=['node_id'], duration_name='udlD')    
+     # sub_component_latencies['udlE'] = get_durations(df, 40031, 40000, group_by_columns=['node_id'], duration_name='udlE')
+     
+     sub_component_latencies['udlA'] = get_durations(df, 10031, 10030, group_by_columns=['node_id'], duration_name='udlA')
+     sub_component_latencies['udlB'] = get_durations(df, 20021, 20020, group_by_columns=['node_id'], duration_name='udlB')
+     sub_component_latencies['udlD'] = get_durations(df, 30031, 30030, group_by_columns=['node_id'], duration_name='udlD')    
+     sub_component_latencies['udlE'] = get_durations(df, 40031, 40030, group_by_columns=['node_id'], duration_name='udlE')
      return sub_component_latencies
 
 def process_udlD_dataframe(df):
      sub_component_latencies = {}
-     sub_component_latencies['udlD_1'] = get_durations(df, 30010, 30000, group_by_columns=['node_id'], duration_name='udlD_1')
+     sub_component_latencies['udlD_1'] = get_durations(df, 30011, 30000, group_by_columns=['node_id'], duration_name='udlD_1')
      sub_component_latencies['udlD_2'] = get_durations(df, 30011, 30010, group_by_columns=['node_id'], duration_name='udlD_2')
-     sub_component_latencies['udlD_3'] = get_durations(df, 30020, 30011, group_by_columns=['node_id'], duration_name='udlD_3')
+     sub_component_latencies['udlD_3'] = get_durations(df, 30010, 30000, group_by_columns=['node_id'], duration_name='udlD_3')
      return sub_component_latencies
 
 
 
 def compute_throughput(df):
+     # df = df[(df['tag'] == 1000) | (df['tag'] == 40031)]
+     df = df[(df['tag'] == 1000) | (df['tag'] == 40100)]
+     start_time = df['timestamp'].min()
+     end_time = df['timestamp'].max()
+     total_time = round((end_time - start_time) / 1000000.0 , 3 )# convert to seconds
+     # compute total_queries in terms of the unique querybatch_id
+     total_queries = len(df['node_id'].unique())
+     throughput = total_queries / total_time
+     return throughput
+
+def compute_udl_throughput(df, start_tag=10000, end_tag=40031):
+     df = df[(df['tag'] == start_tag) | (df['tag'] == end_tag)]
      start_time = df['timestamp'].min()
      end_time = df['timestamp'].max()
      total_time = round((end_time - start_time) / 1000000.0 , 3 )# convert to seconds
@@ -191,6 +210,7 @@ def get_batch_size(df):
      sub_component_batch_sizes = {}
      sub_component_batch_sizes["udlB_exec_batch"] = get_batch_size_df(df, 20021, group_by_columns=['node_id'], col_name='udlB_exec_batch')
      sub_component_batch_sizes["udlB_emit_batch"] = get_batch_size_df(df, 20030, group_by_columns=['node_id'], col_name='udlB_emit_batch')
+     sub_component_batch_sizes["udlD_exec_batch"] = get_batch_size_df(df, 30030, group_by_columns=['node_id'], col_name='udlD_exec_batch')
      sub_component_batch_sizes["udlD_emit_batch"] = get_batch_size_df(df, 30100, group_by_columns=['node_id'], col_name='udlD_emit_batch')
      sub_component_batch_sizes["udlE_exec_batch"] = get_batch_size_df(df, 40030, group_by_columns=['node_id'], col_name='udlE_exec_batch')
      return sub_component_batch_sizes
