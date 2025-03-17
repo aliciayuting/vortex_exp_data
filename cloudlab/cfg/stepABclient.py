@@ -135,8 +135,8 @@ if __name__ == "__main__":
     subgroup_type = "VolatileCascadeStoreWithStringKey"
     
     BS = 1
-    num_batches = 3000
-    DSOFFSET = 0
+    num_batches = 1000
+    DSOFFSET = 3000 - BS*num_batches
     # directories and str configs
     image_processor_name = 'openai/clip-vit-large-patch14'
     checkpoint_path = 'LinWeizheDragon/PreFLMR_ViT-L'
@@ -236,7 +236,7 @@ if __name__ == "__main__":
         if batch_idx == 10:
             time.sleep(20)
             
-        time.sleep(0.008)
+        time.sleep(1)
         
     tl.flush("client_timestamp.dat")
         # time.sleep(1000)
