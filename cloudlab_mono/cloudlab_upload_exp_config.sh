@@ -14,7 +14,7 @@ dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
 
 ips=("10.10.1.1"\
      "10.10.1.2"\
-     "10.10.1.6" \
+     "10.10.1.3" \
      "10.10.1.4"\
      "10.10.1.5")
 #     "10.10.1.4"\
@@ -23,11 +23,11 @@ ips=("10.10.1.1"\
 #     "10.10.1.7"\
 #     "10.10.1.8"\
 #     "10.10.1.9")
-node_names=("TY373@d7525-10s10311.wisc.cloudlab.us" \
-            "TY373@d7525-10s10325.wisc.cloudlab.us" \
-            "TY373@d7525-10s10321.wisc.cloudlab.us" \
-            "TY373@d7525-10s10331.wisc.cloudlab.us"\
-            "TY373@d7525-10s10319.wisc.cloudlab.us")
+node_names=("TY373@d7525-10s10337.wisc.cloudlab.us" \
+            "TY373@d7525-10s10315.wisc.cloudlab.us" \
+            "TY373@d7525-10s10311.wisc.cloudlab.us" \
+            "TY373@d7525-10s10323.wisc.cloudlab.us"\
+            "TY373@d7525-10s10317.wisc.cloudlab.us")
           #   "Alicia@d7525-10s10339.wisc.cloudlab.us"\
           #   "Alicia@d7525-10s10315.wisc.cloudlab.us"\
           #   "Alicia@d7525-10s10327.wisc.cloudlab.us"\

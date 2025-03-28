@@ -166,9 +166,9 @@
                         "index_experiment_name":"EVQA_train_split",
                         "checkpoint_path":"LinWeizheDragon/PreFLMR_ViT-L",
                         "image_processor_name":"openai/clip-vit-large-patch14",
-                        "max_exe_batch_size":2,
+                        "max_exe_batch_size":1,
                         "batch_time_us":100,
-                        "flush_qid":2999
+                        "flush_qid":2399
                     }],
                 "destinations": [{}]
             }

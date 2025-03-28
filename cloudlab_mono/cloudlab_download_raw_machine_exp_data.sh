@@ -10,11 +10,11 @@ fi
 local_directory="$1"
 
 
-node_names=("TY373@d7525-10s10311.wisc.cloudlab.us" \
-            "TY373@d7525-10s10325.wisc.cloudlab.us" \
-            "TY373@d7525-10s10321.wisc.cloudlab.us" \
-            "TY373@d7525-10s10331.wisc.cloudlab.us"\
-            "TY373@d7525-10s10319.wisc.cloudlab.us")
+node_names=("TY373@d7525-10s10337.wisc.cloudlab.us" \
+            "TY373@d7525-10s10315.wisc.cloudlab.us" \
+            "TY373@d7525-10s10311.wisc.cloudlab.us" \
+            "TY373@d7525-10s10323.wisc.cloudlab.us"\
+            "TY373@d7525-10s10317.wisc.cloudlab.us")
 
 node_ids=("n0" "n1" "n2" "n3" "n4")
 # ips=("192.168.9.30" "192.168.9.32" "192.168.9.31")

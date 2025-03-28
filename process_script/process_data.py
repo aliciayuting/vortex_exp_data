@@ -152,7 +152,7 @@ def process_bw_udls_dataframe(df):
      sub_component_latencies = {}
      sub_component_latencies['c_udla'] = get_durations(df, 10000, 1000, group_by_columns=['node_id'], duration_name='c_udla')
      sub_component_latencies['c_udlb'] = get_durations(df, 20000, 1000, group_by_columns=['node_id'], duration_name='c_udlb')
-     sub_component_latencies['udla_d'] = get_durations(df, 30011, 10100, group_by_columns=['node_id'], duration_name='udla_d')
+     sub_component_latencies['udla_d'] = get_durations(df, 30000, 10100, group_by_columns=['node_id'], duration_name='udla_d')
      sub_component_latencies['udlb_d'] = get_durations(df, 30011, 20031, group_by_columns=['node_id'], duration_name='udlb_d')
      sub_component_latencies['udld_e'] = get_durations(df, 40000, 30100, group_by_columns=['node_id'], duration_name='udld_e')
      return sub_component_latencies
@@ -165,15 +165,15 @@ def process_c_mono_dataframe(df):
 
 def process_udls_dataframe(df):
      sub_component_latencies = {}
-     # sub_component_latencies['udlA'] = get_durations(df, 10100, 10000, group_by_columns=['node_id'], duration_name='udlA')
-     # sub_component_latencies['udlB'] = get_durations(df, 20031, 20000, group_by_columns=['node_id'], duration_name='udlB')
-     # sub_component_latencies['udlD'] = get_durations(df, 30100, 30011, group_by_columns=['node_id'], duration_name='udlD')    
-     # sub_component_latencies['udlE'] = get_durations(df, 40031, 40000, group_by_columns=['node_id'], duration_name='udlE')
+     sub_component_latencies['udlA'] = get_durations(df, 10100, 10000, group_by_columns=['node_id'], duration_name='udlA')
+     sub_component_latencies['udlB'] = get_durations(df, 20041, 20000, group_by_columns=['node_id'], duration_name='udlB')
+     sub_component_latencies['udlD'] = get_durations(df, 30100, 30000, group_by_columns=['node_id'], duration_name='udlD')    
+     sub_component_latencies['udlE'] = get_durations(df, 40031, 40000, group_by_columns=['node_id'], duration_name='udlE')
      
-     sub_component_latencies['udlA'] = get_durations(df, 10031, 10030, group_by_columns=['node_id'], duration_name='udlA')
-     sub_component_latencies['udlB'] = get_durations(df, 20021, 20020, group_by_columns=['node_id'], duration_name='udlB')
-     sub_component_latencies['udlD'] = get_durations(df, 30031, 30030, group_by_columns=['node_id'], duration_name='udlD')    
-     sub_component_latencies['udlE'] = get_durations(df, 40031, 40030, group_by_columns=['node_id'], duration_name='udlE')
+     # sub_component_latencies['udlA'] = get_durations(df, 10031, 10030, group_by_columns=['node_id'], duration_name='udlA')
+     # sub_component_latencies['udlB'] = get_durations(df, 20021, 20020, group_by_columns=['node_id'], duration_name='udlB')
+     # sub_component_latencies['udlD'] = get_durations(df, 30031, 30030, group_by_columns=['node_id'], duration_name='udlD')    
+     # sub_component_latencies['udlE'] = get_durations(df, 40031, 40030, group_by_columns=['node_id'], duration_name='udlE')
      return sub_component_latencies
 
 def process_udlD_dataframe(df):

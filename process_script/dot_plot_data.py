@@ -58,7 +58,7 @@ if __name__ == "__main__":
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
-     df = clean_log_dataframe(log_data, start_id=1050, end_id=2999)
+     df = clean_log_dataframe(log_data, start_id=50, end_id=2999)
      if print_type == "e2e":
           
           duration_df = process_e2e_dataframe(df)

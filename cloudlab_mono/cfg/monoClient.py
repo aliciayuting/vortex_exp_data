@@ -102,7 +102,7 @@ if __name__ == "__main__":
     subgroup_type   = "VolatileCascadeStoreWithStringKey"
     subgroup_index  = 0
     BS              = 1
-    num_batches     = 3000
+    num_batches     = 4000
     
     checkpoint_path = 'LinWeizheDragon/PreFLMR_ViT-L'
     image_processor_name = 'openai/clip-vit-large-patch14'
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     ds = load_dataset('parquet', data_files ={  
                                             'train' : ds_dir + '/train-00000-of-00001.parquet',
                                             'test'  : ds_dir + '/test-00000-of-00001-2.parquet',
-                                            })[use_split].select([i for i in range(0, int(BS*num_batches), 1)])
+                                            })[use_split].select([i for i in range(0, 4000, 1)])
     # preprocess datasets so that we have 
     ds = ds.map(add_path_prefix_in_img_path, fn_kwargs={"prefix": image_root_dir})
     ds = ds.map(prepare_text_sequence)
@@ -179,6 +179,6 @@ if __name__ == "__main__":
         if batch_idx == 10:
             time.sleep(20)
 
-        time.sleep(0.25)
+        time.sleep(0.015)
         
     tl.flush("mono_client_timestamp.dat")
