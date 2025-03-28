@@ -32,7 +32,7 @@ def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_
 def write_e2e_csv(local_dir, duration_df, throughput):
      file_name = str(throughput) + "_e2e_latency_ns.csv"
      csv_file_name = os.path.join(local_dir, file_name)
-     e2e_list = duration_df['e2e_time'].tolist()
+     e2e_list = duration_df['e2e_time'].values.tolist()
      with open(csv_file_name, 'w') as f:
           for e2e in e2e_list:
                f.write(f"{e2e},")
