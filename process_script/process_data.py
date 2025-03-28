@@ -139,8 +139,8 @@ def get_batch_size_df(df, tag, group_by_columns='node_id', col_name='batch_size'
 def process_e2e_dataframe(df):
      # print(df)
      sub_component_latencies = {}
-     sub_component_latencies['e2e_time'] = get_durations(df, 40031, 1000, group_by_columns=['node_id'], duration_name='e2e_time') #micro
-     # sub_component_latencies['e2e_time'] = get_durations(df, 40100, 1000, group_by_columns=['node_id'], duration_name='e2e_time')  #mono
+     # sub_component_latencies['e2e_time'] = get_durations(df, 40031, 1000, group_by_columns=['node_id'], duration_name='e2e_time') #micro
+     sub_component_latencies['e2e_time'] = get_durations(df, 40100, 1000, group_by_columns=['node_id'], duration_name='e2e_time')  #mono
      return sub_component_latencies
 
 def process_last_udl_dataframe(df):
@@ -168,7 +168,7 @@ def process_udls_dataframe(df):
      sub_component_latencies['udlA'] = get_durations(df, 10100, 10000, group_by_columns=['node_id'], duration_name='udlA')
      sub_component_latencies['udlB'] = get_durations(df, 20041, 20000, group_by_columns=['node_id'], duration_name='udlB')
      sub_component_latencies['udlD'] = get_durations(df, 30100, 30000, group_by_columns=['node_id'], duration_name='udlD')    
-     sub_component_latencies['udlE'] = get_durations(df, 40031, 40000, group_by_columns=['node_id'], duration_name='udlE')
+     sub_component_latencies['udlE'] = get_durations(df, 40100, 40031, group_by_columns=['node_id'], duration_name='udlE')
      
      # sub_component_latencies['udlA'] = get_durations(df, 10031, 10030, group_by_columns=['node_id'], duration_name='udlA')
      # sub_component_latencies['udlB'] = get_durations(df, 20021, 20020, group_by_columns=['node_id'], duration_name='udlB')
@@ -186,8 +186,8 @@ def process_udlD_dataframe(df):
 
 
 def compute_throughput(df):
-     df = df[(df['tag'] == 1000) | (df['tag'] == 40031)]
-     # df = df[(df['tag'] == 1000) | (df['tag'] == 40100)]    #mono
+     # df = df[(df['tag'] == 1000) | (df['tag'] == 40031)]
+     df = df[(df['tag'] == 1000) | (df['tag'] == 40100)]    #mono
      start_time = df['timestamp'].min()
      end_time = df['timestamp'].max()
      total_time = round((end_time - start_time) / 1000000.0 , 3 )# convert to seconds
@@ -213,6 +213,7 @@ def get_batch_size(df):
      sub_component_batch_sizes["udlD_exec_batch"] = get_batch_size_df(df, 30030, group_by_columns=['node_id'], col_name='udlD_exec_batch')
      sub_component_batch_sizes["udlD_emit_batch"] = get_batch_size_df(df, 30100, group_by_columns=['node_id'], col_name='udlD_emit_batch')
      sub_component_batch_sizes["udlE_exec_batch"] = get_batch_size_df(df, 40030, group_by_columns=['node_id'], col_name='udlE_exec_batch')
+     sub_component_batch_sizes["mono_exec_batch"] = get_batch_size_df(df, 40031, group_by_columns=['node_id'], col_name='mono_exec_batch')
      return sub_component_batch_sizes
      
 
