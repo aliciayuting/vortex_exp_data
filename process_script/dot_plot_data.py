@@ -29,6 +29,16 @@ def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_
      # plt.savefig(save_file_name)
      plt.show()
 
+def write_e2e_csv(local_dir, duration_df, throughput):
+     file_name = str(throughput) + "_e2e_latency_ns.csv"
+     csv_file_name = os.path.join(local_dir, file_name)
+     e2e_list = duration_df['e2e_time'].tolist()
+     with open(csv_file_name, 'w') as f:
+          for e2e in e2e_list:
+               f.write(f"{e2e},")
+     f.close()
+     print(f"avg e2e latency: {np.mean(np.array(e2e_list))/1000.0} ms, throughput: {throughput} Qps")
+     print(f"wrote e2e csv file to {csv_file_name}")
 
 
 
@@ -59,11 +69,13 @@ if __name__ == "__main__":
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
      df = clean_log_dataframe(log_data, start_id=50, end_id=2999)
+     throughput = compute_throughput(df)
+     print(f"throughput: {throughput} Qps")
+     
      if print_type == "e2e":
-          
           duration_df = process_e2e_dataframe(df)
           print(duration_df)
-          
+          write_e2e_csv(local_dir, duration_df, throughput)
           dot_plot_latencies(duration_df['e2e_time'], 'e2e_time', 'End-to-End Latency(us)', \
                               'Query ID', 'Latency (us)', save_file_name)
           
