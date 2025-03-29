@@ -53,7 +53,7 @@ if __name__ == "__main__":
      list_of_type = ["e2e", "last_udl", "udlA", "udlB", "udlD", "udlE", "c_udla", "c_udlb", \
           "udla_d", "udlb_d", "udld_e", "c_mono", "udlD_1", "udlD_2", "udlD_3", "throughput",\
           "udlB_exec_batch", "udlB_emit_batch","udlD_emit_batch", "udlE_exec_batch", "udlD_exec_batch",\
-          "UDLA_TP", "UDLB_TP", "UDLD_TP", "UDLE_TP", "C_A_TP", "C_B_TP", "A_D_TP", "B_D_TP", "D_E_TP", "mono_exec_batch"]
+          "UDLA_TP", "UDLB_TP", "UDLD_TP", "UDLE_TP", "C_A_TP", "C_B_TP", "A_D_TP", "B_D_TP", "D_E_TP", "mono_exec_batch", "udlA_exec_batch"]
      print(f"print_type {list_of_type}")
      print_type = input()
      if print_type not in list_of_type:
@@ -68,7 +68,7 @@ if __name__ == "__main__":
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
-     df = clean_log_dataframe(log_data, start_id=1050, end_id=4999)
+     df = clean_log_dataframe(log_data, start_id=50, end_id=3999)
      throughput = compute_throughput(df)
      print(f"throughput: {throughput} Qps")
      
@@ -230,6 +230,13 @@ if __name__ == "__main__":
           batch_size_df_dict = get_batch_size(df)
           print(batch_size_df_dict['mono_exec_batch'])
           dot_plot_latencies(batch_size_df_dict['mono_exec_batch'], 'mono_exec_batch', 'mono_exec_batch', \
+                              'Query ID', 'Batch Size', save_file_name)
+          
+     elif print_type == list_of_type[31]:
+          print(f"got print type of : {print_type}")
+          batch_size_df_dict = get_batch_size(df)
+          print(batch_size_df_dict['udlA_exec_batch'])
+          dot_plot_latencies(batch_size_df_dict['udlA_exec_batch'], 'udlA_exec_batch', 'udlA_exec_batch', \
                               'Query ID', 'Batch Size', save_file_name)
      # elif print_type == "udl2":
      #      duration_df_dict,_ = process_udl2_dataframe(df)

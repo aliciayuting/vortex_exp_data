@@ -55,25 +55,25 @@ done
 
 remote_cfg_directory="~/workspace/vortex_udlppl1/build-Release/cfg"
 
-for ((i=0; i<${#ips[@]}; i++)); do
-     node_name="${node_names[i]}"
-     node_id="${node_ids[i]}"
-     cfg_file_path="${local_cfg_directory}/${node_id}/${derecho_cfg_file_name}"
-     scp "${cfg_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/" 
+# for ((i=0; i<${#ips[@]}; i++)); do
+#      node_name="${node_names[i]}"
+#      node_id="${node_ids[i]}"
+#      cfg_file_path="${local_cfg_directory}/${node_id}/${derecho_cfg_file_name}"
+#      scp "${cfg_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/" 
 
-     env_file_path="${local_cfg_directory}/${node_id}/${env_file_name}"
-     scp "${env_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
+#      env_file_path="${local_cfg_directory}/${node_id}/${env_file_name}"
+#      scp "${env_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
 
-     gpu_monitor_file_path="${local_cfg_directory}/${gpu_monitor_file}"
-     scp "${gpu_monitor_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
+#      gpu_monitor_file_path="${local_cfg_directory}/${gpu_monitor_file}"
+#      scp "${gpu_monitor_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
 
-     layot_file_path="${local_cfg_directory}/layout.json"
-     scp "${layot_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
+#      layot_file_path="${local_cfg_directory}/layout.json"
+#      scp "${layot_file_path}" "${node_name}:${remote_cfg_directory}/${node_id}/"
 
-     dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
-     scp "${dfgs_file_path}" "${node_name}:${remote_cfg_directory}/"
-     sleep 1
-done
+#      dfgs_file_path="${local_cfg_directory}/${dfgs_file}"
+#      scp "${dfgs_file_path}" "${node_name}:${remote_cfg_directory}/"
+#      sleep 1
+# done
 
 last_node_id=${node_ids[${#node_ids[@]}-1]}
 last_remote_node_name=${node_names[${#node_names[@]}-1]}

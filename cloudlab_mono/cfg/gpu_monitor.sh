@@ -9,7 +9,7 @@ DCGM_LOG="dcgm_log.dat"
 
 # Monitoring intervals
 MEMORY_INTERVAL=5  # seconds for nvidia-smi sampling
-DCGM_INTERVAL=3    # seconds for DCGM sampling
+DCGM_INTERVAL=1    # seconds for DCGM sampling
 
 # Compute DCGM sampling interval in milliseconds
 DCGM_SAMPLING_INTERVAL=$((DCGM_INTERVAL * 1000))
