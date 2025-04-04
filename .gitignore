@@ -9,3 +9,5 @@
 venv
 /jamal*/
 *.zip
+
+*.csv
