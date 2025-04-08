@@ -2,15 +2,34 @@ import gurobipy as gp
 from gurobipy import GRB
 
 # Define models, configs, and nodes
-models = ['AC', 'B', 'D']
+# ================ Pipeline 1 ================
+
+# models = ['AC', 'B', 'D']
+# configs = [6, 12, 24]
+# nodes = ['GPU0', 'GPU1', 'GPU2', 'GPU3']#, 'GPU4', 'GPU5', 'GPU6']
+
+# # Throughput dictionary
+# throughput = {
+#     'AC': {6: 200, 12: 240, 24: 270},
+#     'B': {24: 45},
+#     'D': {6: 55, 12: 55, 24: 70},
+# }
+
+# ================ Pipeline 2 ================
+# A: audio recognition
+# B: encoder + search
+# C: text check
+# D: language detection
+models = ['A', 'B', 'C','D']
 configs = [6, 12, 24]
 nodes = ['GPU0', 'GPU1', 'GPU2', 'GPU3']#, 'GPU4', 'GPU5', 'GPU6']
 
 # Throughput dictionary
 throughput = {
-    'AC': {6: 200, 12: 240, 24: 270},
-    'B': {24: 45},
-    'D': {6: 55, 12: 55, 24: 70},
+    'A': {24: 255},
+    'B': {6: 5333, 12: 6083 ,24: 7555},
+    'C': {6: 217, 12: 379, 24: 659},
+    'D': {6: 95, 12: 172, 24: 332},
 }
 
 valid_layouts = [
