@@ -18,6 +18,7 @@ def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_
      # print(duration_df['node_id'])
      print(f"mean:{np.mean(np.array(duration_df[plot_column_name]))/1000.0} ms")
      print(f"median:{np.median(np.array(duration_df[plot_column_name]))/1000.0} ms")
+     print(f"5 percentile: {np.percentile(np.array(duration_df[plot_column_name]), 5)/1000.0} ms")
      print(f"95 percentile: {np.percentile(np.array(duration_df[plot_column_name]), 95)/1000.0} ms")
      plt.title(title)
      plt.xlabel(xaxis)
@@ -26,8 +27,8 @@ def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_
      plt.grid()
      plt.ylim(0, duration_df[plot_column_name].max() * 1.5)
      
-     # plt.savefig(save_file_name)
-     plt.show()
+     plt.savefig(save_file_name)
+     # plt.show()
 
 def write_e2e_csv(local_dir, duration_df, throughput):
      file_name = "tp" + str(int(throughput)) + "_e2e_latency_ns.csv"
@@ -62,15 +63,17 @@ if __name__ == "__main__":
      
      
      
-     name =  "dotplot_" + print_type + local_dir.split("/")[-1] + ".pdf"
-     save_file_name = os.path.join(save_dir, name)
+     
 
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
-     df = clean_log_dataframe(log_data, start_id=50, end_id=3999)
+     df = clean_log_dataframe(log_data, start_id=100, end_id=2000)
      throughput = compute_throughput(df)
      print(f"throughput: {throughput} Qps")
+     
+     name =  "dotplot_" + print_type  + "_" + local_dir.split("/")[-2] + ".pdf"
+     save_file_name = os.path.join(save_dir, name)
      
      if print_type == "e2e":
           duration_df = process_e2e_dataframe(df)

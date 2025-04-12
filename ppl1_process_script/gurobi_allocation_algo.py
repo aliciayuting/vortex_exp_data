@@ -1,12 +1,12 @@
 import gurobipy as gp
 from gurobipy import GRB
 
-# Define models, configs, and nodes
-# ================ Pipeline 1 ================
+# # Define models, configs, and nodes
+# # ================ Pipeline 1 ================
 
 # models = ['AC', 'B', 'D']
 # configs = [6, 12, 24]
-# nodes = ['GPU0', 'GPU1', 'GPU2', 'GPU3']#, 'GPU4', 'GPU5', 'GPU6']
+# nodes = ['GPU0', 'GPU1', 'GPU2', 'GPU3', 'GPU4', 'GPU5', 'GPU6', 'GPU7']
 
 # # Throughput dictionary
 # throughput = {
@@ -17,19 +17,21 @@ from gurobipy import GRB
 
 # ================ Pipeline 2 ================
 # A: audio recognition
-# B: encoder + search
-# C: text check
-# D: language detection
-models = ['A', 'B', 'C','D']
+# B: encoder + search doc
+# C: text check  (bart-larger)
+# D: language detection  (roberta-large)
+# E: text to speech (fastpitch)
+models = ['A', 'B', 'C','E']
 configs = [6, 12, 24]
-nodes = ['GPU0', 'GPU1', 'GPU2', 'GPU3']#, 'GPU4', 'GPU5', 'GPU6']
+nodes = ['GPU0', 'GPU1', 'GPU2', 'GPU3'] #, 'GPU4', 'GPU5', 'GPU6']
 
 # Throughput dictionary
 throughput = {
-    'A': {24: 255},
+    'A': {12:71, 24: 125},
     'B': {6: 5333, 12: 6083 ,24: 7555},
-    'C': {6: 217, 12: 379, 24: 659},
-    'D': {6: 95, 12: 172, 24: 332},
+    'C': {6: 26, 12: 45, 24: 92},
+    # 'D': {6: 95, 12: 172, 24: 332},
+    'E': {12: 3.9, 24: 4.82}
 }
 
 valid_layouts = [
@@ -108,9 +110,11 @@ for _ in range(len(models)):
     locked[min_model] = T_vals[min_model]
 
 # Print results
-print("\nLeximin Model Throughputs:")
+print(f"\nPipeline Throughput: {min(locked.values()):.2f}")
+print(" Leximin Model Throughputs:")
 for model in models:
-    print(f"{model}: {locked[model]:.2f}")
+    print(f" {model}: {locked[model]:.2f}")
+
 
 print("\nAssignments:")
 for (model, node, c), count in assignment.items():
