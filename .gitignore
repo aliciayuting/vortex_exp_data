@@ -1,5 +1,6 @@
 # Ignore all .dat files
 *.dat
+*.pdf
 *.pkl
 *hotpot_train_v1.1.json*
 # exp_data/*

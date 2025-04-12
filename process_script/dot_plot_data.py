@@ -27,7 +27,7 @@ def dot_plot_latencies(duration_df, plot_column_name, title, xaxis, yaxis, save_
      plt.ylim(0, duration_df[plot_column_name].max() * 1.5)
      
      # plt.savefig(save_file_name)
-     plt.show()
+     # plt.show()
 
 def write_e2e_csv(local_dir, duration_df, throughput):
      file_name = "tp" + str(int(throughput)) + "_e2e_latency_ns.csv"
@@ -62,13 +62,13 @@ if __name__ == "__main__":
      
      
      
-     name =  "dotplot_" + print_type + local_dir.split("/")[-1] + ".pdf"
+     name =  "dotplot_" + print_type + "_scaleout_" + local_dir.split("/")[-1] + ".pdf"
      save_file_name = os.path.join(save_dir, name)
 
      log_files = get_log_files(local_dir, suffix)
      log_data = get_log_files_dataframe(log_files)
      # print(f"log data: {log_data}")
-     df = clean_log_dataframe(log_data, start_id=50, end_id=3999)
+     df = clean_log_dataframe(log_data, start_id=3333, end_id=3333)
      throughput = compute_throughput(df)
      print(f"throughput: {throughput} Qps")
      
@@ -76,8 +76,8 @@ if __name__ == "__main__":
           duration_df = process_e2e_dataframe(df)
           print(duration_df)
           write_e2e_csv(local_dir, duration_df['e2e_time'], throughput)
-          dot_plot_latencies(duration_df['e2e_time'], 'e2e_time', 'End-to-End Latency(us)', \
-                              'Query ID', 'Latency (us)', save_file_name)
+          dot_plot_latencies(duration_df['e2e_time'], 'e2e_time', 'End-to-End Latency(sec)', \
+                              'Query ID', 'Latency (sec)', save_file_name)
           
      elif print_type == "c_mono":
           duration_df_dict = process_c_mono_dataframe(df)
