@@ -95,7 +95,7 @@ def main():
         print(f"[{node_name}]")
         print(f"  Requests       : {latency['count']}")
         print(f"  Throughput     : {throughput:.2f} req/s")
-        print(f"  Latency (s)    : mean={latency['mean']:.4f}, p50={latency['p50']:.4f}, p90={latency['p90']:.4f}, p99={latency['p99']:.4f}")
+        print(f"  Latency (s)    : mean={latency['mean']:.4f}, p50={latency['p50']:.4f}, p90={latency['p90']:.4f}, p99={latency['p99']:.4f}, min={min(durs):.4f}, max={max(durs):.4f}")
 
     # Aggregate stats
     print("\n Aggregate Metrics:\n" + "-" * 30)
