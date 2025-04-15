@@ -186,7 +186,7 @@ def process_udlD_dataframe(df):
 
 
 def compute_throughput(df):
-     df = df[(df['tag'] == 1000) | (df['tag'] == 40031)]
+     df = df[(df['tag'] == 1000) | (df['tag'] == 70100)]
      # df = df[(df['tag'] == 1000) | (df['tag'] == 40100)]    #mono
      start_time = df['timestamp'].min()
      end_time = df['timestamp'].max()
@@ -196,7 +196,7 @@ def compute_throughput(df):
      throughput = total_queries / total_time
      return throughput
 
-def compute_udl_throughput(df, start_tag=10000, end_tag=40031):
+def compute_udl_throughput(df, start_tag=10000, end_tag=70100):
      df = df[(df['tag'] == start_tag) | (df['tag'] == end_tag)]
      start_time = df['timestamp'].min()
      end_time = df['timestamp'].max()
