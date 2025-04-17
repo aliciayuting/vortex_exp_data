@@ -80,6 +80,40 @@ def clean_log_dataframe(log_data, start_id = 164000, end_id=166900):
      return df
 
 
+def get_durations_with_start_timestamp(df, start_tag, end_tag, group_by_columns=['node_id'], duration_name='latency'):
+    # Normalize timestamps
+    min_timestamp = df['timestamp'].min()
+    df = df.copy()  # Avoid modifying the original DataFrame
+    df['timestamp'] = df['timestamp'] - min_timestamp
+
+    filtered_df = df[(df['tag'] == start_tag) | (df['tag'] == end_tag)]
+    grouped = filtered_df.groupby(group_by_columns)
+    duration_results = []
+
+    for group_values, group_df in grouped:
+        timestamps = group_df['timestamp']
+        latency = timestamps.max() - timestamps.min()
+
+        # Get the start_tag timestamp
+        start_rows = group_df[group_df['tag'] == start_tag]
+        start_timestamp = start_rows['timestamp'].min() if not start_rows.empty else None
+
+        # Unpack group_values if there's only one grouping column
+        if len(group_by_columns) == 1:
+            group_values = group_values[0]
+
+        result = (
+            {group_by_columns[i]: group_values[i] for i in range(len(group_by_columns))}
+            if len(group_by_columns) > 1
+            else {group_by_columns[0]: group_values}
+        )
+        result[duration_name] = latency
+        result[f"timestamp"] = start_timestamp
+        duration_results.append(result)
+    print(f"larged timestamp = {df['timestamp'].max()}")
+    duration_df = pd.DataFrame(duration_results)
+    return duration_df
+
 
 def get_durations(df, start_tag, end_tag, group_by_columns=['node_id'], duration_name='latency'):
     filtered_df = df[(df['tag'] == start_tag) | (df['tag'] == end_tag)]
@@ -134,7 +168,14 @@ def get_batch_size_df(df, tag, group_by_columns='node_id', col_name='batch_size'
           batch_sizes.append(result)
      batch_size_df = pd.DataFrame(batch_sizes)
      return batch_size_df
-     
+
+
+def process_e2e_dataframe_with_starttime(df):
+     # print(df)
+     sub_component_latencies = {}
+     sub_component_latencies['e2e_time'] = get_durations_with_start_timestamp(df, 1000, 40031, group_by_columns=['node_id'], duration_name='e2e_time') #micro
+     # sub_component_latencies['e2e_time'] = get_durations(df, 40100, 1000, group_by_columns=['node_id'], duration_name='e2e_time')  #mono
+     return sub_component_latencies
 
 def process_e2e_dataframe(df):
      # print(df)
