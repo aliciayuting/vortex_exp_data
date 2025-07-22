@@ -15,7 +15,7 @@ mpl.rcParams.update({
 cluster_size = 4
 plot_name = f"ppl1_micro_cluster{cluster_size}"
 # Color and label configuration
-frameworks = ['Torch Serve', 'Ray Monolithic', 'Ray Microservice', 'Vortex Monolithic', 'Vortex Microservice']
+# frameworks = ['TorchServe', 'Ray Serve Monolithic', 'Ray Serve Microservice', 'Vortex Monolithic', 'Vortex Microservice']
 
 plt.figure(figsize=(12, 6))
 cur_alpha = 1
@@ -31,20 +31,40 @@ plt.errorbar(ray_df['ThroughputMicro'][mask], ray_df['LatencyMedMicro'][mask],
                  (ray_df['Latency95Micro'] - ray_df['LatencyMedMicro'])[mask]
              ],
              fmt='-o', markersize=cur_markersize, capsize=cur_capsize, alpha=cur_alpha,
-             label='Ray Microservice', color=frame_colors['Ray Microservice'], markeredgewidth=2.5)
+             label='Ray Serve Microservice', color=frame_colors['Ray Microservice'], markeredgewidth=2.5)
 
 # === Vortex Microservice (TCP) ===
 vortex_tcp_df = pd.read_csv(f"vortex_cluster{cluster_size}_summary_tcp.csv")
 mask = vortex_tcp_df[['ThroughputMicro', 'Latency5Micro', 'LatencyMedMicro', 'Latency95Micro']].notna().all(axis=1)
+# plt.errorbar(vortex_tcp_df['ThroughputMicro'][mask], vortex_tcp_df['LatencyMedMicro'][mask],
+#              yerr=[
+#                  (vortex_tcp_df['LatencyMedMicro'] - vortex_tcp_df['Latency5Micro'])[mask],
+#                  (vortex_tcp_df['Latency95Micro'] - vortex_tcp_df['LatencyMedMicro'])[mask]
+#              ],
+#              fmt='-o', markersize=cur_markersize, capsize=cur_capsize, alpha=cur_alpha,
+#              label='Vortex Microservice (TCP)', color=frame_colors['Vortex Microservice (TCP)'], markeredgewidth=2.5)
+
 plt.errorbar(vortex_tcp_df['ThroughputMicro'][mask], vortex_tcp_df['LatencyMedMicro'][mask],
              yerr=[
                  (vortex_tcp_df['LatencyMedMicro'] - vortex_tcp_df['Latency5Micro'])[mask],
                  (vortex_tcp_df['Latency95Micro'] - vortex_tcp_df['LatencyMedMicro'])[mask]
              ],
              fmt='-o', markersize=cur_markersize, capsize=cur_capsize, alpha=cur_alpha,
-             label='Vortex Microservice (TCP)', color=frame_colors['Vortex Microservice (TCP)'], markeredgewidth=2.5)
+             label='Typhoon Microservice (TCP)', color=frame_colors['Vortex Microservice (TCP)'], markeredgewidth=2.5)
+
 
 # === Vortex Microservice (RDMA) ===
+# vortex_rdma_df = pd.read_csv(f"vortex_cluster{cluster_size}_summary_rdma.csv")
+# mask = vortex_rdma_df[['ThroughputMicro', 'Latency5Micro', 'LatencyMedMicro', 'Latency95Micro']].notna().all(axis=1)
+# plt.errorbar(vortex_rdma_df['ThroughputMicro'][mask], vortex_rdma_df['LatencyMedMicro'][mask],
+#              yerr=[
+#                  (vortex_rdma_df['LatencyMedMicro'] - vortex_rdma_df['Latency5Micro'])[mask],
+#                  (vortex_rdma_df['Latency95Micro'] - vortex_rdma_df['LatencyMedMicro'])[mask]
+#              ],
+#              fmt='-o', markersize=cur_markersize, capsize=cur_capsize, alpha=cur_alpha,
+#              label='Vortex Microservice (RDMA)', color=frame_colors['Vortex Microservice'], markeredgewidth=2.5)
+
+
 vortex_rdma_df = pd.read_csv(f"vortex_cluster{cluster_size}_summary_rdma.csv")
 mask = vortex_rdma_df[['ThroughputMicro', 'Latency5Micro', 'LatencyMedMicro', 'Latency95Micro']].notna().all(axis=1)
 plt.errorbar(vortex_rdma_df['ThroughputMicro'][mask], vortex_rdma_df['LatencyMedMicro'][mask],
@@ -53,7 +73,8 @@ plt.errorbar(vortex_rdma_df['ThroughputMicro'][mask], vortex_rdma_df['LatencyMed
                  (vortex_rdma_df['Latency95Micro'] - vortex_rdma_df['LatencyMedMicro'])[mask]
              ],
              fmt='-o', markersize=cur_markersize, capsize=cur_capsize, alpha=cur_alpha,
-             label='Vortex Microservice (RDMA)', color=frame_colors['Vortex Microservice'], markeredgewidth=2.5)
+             label='Typhoon Microservice (RDMA)', color=frame_colors['Vortex Microservice'], markeredgewidth=2.5)
+
 
 # Formatting
 plt.title(f"Latency vs Throughput (TCP vs. RDMA)", fontsize=26, pad=10)
@@ -67,5 +88,6 @@ plt.grid(True)
 plt.tight_layout()
 
 # Save and display
-plt.savefig(f'rdma_vs_tcp_vs_ray_{plot_name}.pdf')
+# plt.savefig(f'rdma_vs_tcp_vs_ray_{plot_name}.pdf')
+plt.savefig(f'Typhoon_rdma_vs_tcp_vs_ray_{plot_name}.pdf')
 plt.show()

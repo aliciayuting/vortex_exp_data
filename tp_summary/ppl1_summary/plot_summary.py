@@ -1,9 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+mpl.rcParams.update({
+    "text.usetex": False,
+    "font.family": "serif",
+    "font.serif": ["Computer Modern", "Latin Modern Roman", "CMU Serif", "DejaVu Serif"],
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42
+})
+
+from plot_colors import frame_colors
 
 cluster_size = 4
 # Load data
-sys_name = "vortex"  # or "ray"
+sys_name = "ray"  # or "ray"
 plot_name = f"ppl1_{sys_name}_cluster{cluster_size}"
 
 
@@ -29,7 +39,7 @@ if sys_name == "ray":
                     (ray_df['Latency95Mono'] - ray_df['LatencyMedMono'])[mask]
                 ],
                 fmt='-s', markersize=cur_markersize,markeredgewidth=2.5, capsize=cur_capsize,alpha=cur_alpha,
-                label='Ray Monolithic', color=colors[1])
+                label='Ray Monolithic', color=frame_colors['Ray Monolithic'])
 
     # Ray Microservice
     mask = ray_df[['ThroughputMicro', 'Latency5Micro', 'LatencyMedMicro', 'Latency95Micro']].notna().all(axis=1)
@@ -39,7 +49,8 @@ if sys_name == "ray":
                     (ray_df['Latency95Micro'] - ray_df['LatencyMedMicro'])[mask]
                 ],
                 fmt='-o', markersize=cur_markersize, markeredgewidth=2.5,capsize=cur_capsize,alpha=cur_alpha,
-                label='Ray Microservice', color=colors[2])
+                label='Ray Microservice', color=frame_colors['Ray Microservice'])
+    plt.title(f"Latency vs Throughput on Ray Cluster{cluster_size}", fontsize=26, pad=10)
 
 # # Vortex Monolithic
 if sys_name == "vortex":
@@ -52,7 +63,7 @@ if sys_name == "vortex":
                     (vortex_df['Latency95Mono'] - vortex_df['LatencyMedMono'])[mask]
                 ],
                 fmt='-s', markersize=cur_markersize, capsize=cur_capsize,alpha=cur_alpha,
-                label='Vortex Monolithic', color=colors[3])
+                label='Vortex Monolithic', color=frame_colors['Vortex Monolithic'])
 
     # Vortex Microservice
     mask = vortex_df[['ThroughputMicro', 'Latency5Micro', 'LatencyMedMicro', 'Latency95Micro']].notna().all(axis=1)
@@ -62,19 +73,20 @@ if sys_name == "vortex":
                     (vortex_df['Latency95Micro'] - vortex_df['LatencyMedMicro'])[mask]
                 ],
                 fmt='-o', markersize=cur_markersize, capsize=cur_capsize,alpha=cur_alpha,
-                label='Vortex Microservice', color=colors[4])
+                label='Vortex Microservice', color=frame_colors['Vortex Microservice'])
+    plt.title(f"Latency vs Throughput on Vortex Cluster{cluster_size}", fontsize=26, pad=10)
 
 # Plot formatting
-plt.xlabel('Throughput (queries/sec)', fontsize=26)
-plt.ylabel('Latency (ms)', fontsize=26)
-plt.title(f"Latency vs Throughput on Cluster{cluster_size}", fontsize=26)
+plt.xlabel('Throughput (queries/sec)', fontsize=27)
+plt.ylabel('Latency (ms)', fontsize=27)
+
 if cluster_size == 7:
     plt.xlim([20, 250])
     plt.ylim([0, 1000])
 elif cluster_size == 4:
     plt.xlim([20, 130])
     plt.ylim([0, 1000])
-plt.tick_params(axis='both', labelsize=24)
+plt.tick_params(axis='both', labelsize=25)
 plt.legend(fontsize=24, loc='upper left') 
 plt.grid(True)
 plt.tight_layout()
