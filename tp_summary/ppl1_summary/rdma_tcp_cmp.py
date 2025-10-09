@@ -17,7 +17,7 @@ plot_name = f"ppl1_micro_cluster{cluster_size}"
 # Color and label configuration
 # frameworks = ['TorchServe', 'Ray Serve Monolithic', 'Ray Serve Microservice', 'Vortex Monolithic', 'Vortex Microservice']
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(12, 8))
 cur_alpha = 1
 cur_markersize = 12
 cur_capsize = 6
@@ -80,11 +80,11 @@ plt.errorbar(vortex_rdma_df['ThroughputMicro'][mask], vortex_rdma_df['LatencyMed
 plt.title(f"Latency vs Throughput (TCP vs. RDMA)", fontsize=26, pad=10)
 plt.xlabel('Throughput (queries/sec)', fontsize=27)
 plt.ylabel('Latency (ms)', fontsize=27)
-plt.xlim([20, 130])
+plt.xlim([20, 120])
 plt.ylim([0, 1000])
 plt.tick_params(axis='both', labelsize=25)
 plt.legend(fontsize=22, loc='upper left')
-plt.grid(True)
+plt.grid(False)#True, axis='y', alpha=0.7)
 plt.tight_layout()
 
 # Save and display

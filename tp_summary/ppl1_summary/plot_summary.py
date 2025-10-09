@@ -22,7 +22,7 @@ plot_name = f"ppl1_{sys_name}_cluster{cluster_size}"
 frameworks = ['Torch Serve', 'Ray Monolithic', 'Ray Microservice', 'Vortex Monolithic', 'Vortex Microservice']
 colors = ['#444444', '#5B8DB8', '#264E86', '#E57373', '#A61B1B']
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(11, 6))
 cur_alpha = 1
 cur_markersize = 12
 cur_capsize = 6
@@ -85,10 +85,10 @@ if cluster_size == 7:
     plt.ylim([0, 1000])
 elif cluster_size == 4:
     plt.xlim([20, 130])
-    plt.ylim([0, 1000])
+    plt.ylim([0, 1200])
 plt.tick_params(axis='both', labelsize=25)
 plt.legend(fontsize=24, loc='upper left') 
-plt.grid(True)
+plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 
 # Save and display
